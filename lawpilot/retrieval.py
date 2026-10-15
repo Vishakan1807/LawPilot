@@ -89,6 +89,7 @@ class Candidate:
     vec_rank: Optional[int] = None
     vec_sim: float = 0.0
     exact: bool = False
+    provision: str = ""          # e.g. 'Section 482 BNSS' when the question names this provision
     rrf: float = 0.0
     score: float = 0.0
     coverage: float = 0.0
@@ -346,6 +347,34 @@ def vector_search(db, cfg, query_text: str, where: str, params: list, limit: int
 
 # ── Exact lookups ──────────────────────────────────────────────────────────
 
+def provision_targets(analysis: QueryAnalysis) -> List[Tuple[str, str]]:
+    """(Act title, 'Section N') pairs the question names or implies, e.g. ('Bharatiya Nagarik Suraksha Sanhita, 2023', 'Section 482')."""
+    out = []
+    for corr in analysis.code_correspondence:
+        for side in ("from", "to"):
+            m = re.match(r"Section (\S+) (.+)$", corr[side])
+            if m:
+                out.append((m.group(2), f"Section {m.group(1)}"))
+    for statute in analysis.statutes:
+        for sec in analysis.sections:
+            out.append((statute, f"Section {re.match(r'[0-9]+[A-Z]*', sec).group(0)}"))
+    return list(dict.fromkeys(out))
+
+
+def provision_chunk_ids(db, analysis: QueryAnalysis, where: str, params: list) -> Dict[str, str]:
+    """Fetch the exact statutory sections a question names, even when their wording shares no keywords
+    with the question (BNSS s.482 never says 'anticipatory')."""
+    hits: Dict[str, str] = {}
+    for act, sec in provision_targets(analysis)[:8]:
+        short = re.sub(r",?\s*\d{4}$", "", act).strip()
+        rows = db.execute(f"SELECT c.id FROM chunks c JOIN sources s ON s.id = c.source_id WHERE {where} "
+                          f"AND s.title LIKE ? AND c.section_ref = ? ORDER BY c.idx LIMIT 2",
+                          params + [f"%{short}%", sec]).fetchall()
+        for r in rows:
+            hits.setdefault(r[0], f"{sec} of {act}")
+    return hits
+
+
 def _tokens(text: str) -> List[str]:
     return re.findall(r"[a-z0-9]+", (text or "").lower())
 
@@ -434,7 +463,14 @@ def retrieve(db, cfg, analysis: QueryAnalysis, filters: Filters, matter_id: Opti
         exact_chunk_ids += [r[0] for r in db.execute(
             "SELECT id FROM chunks WHERE source_id = ? ORDER BY idx LIMIT 2", (sid,))]
 
-    cands = _load_candidates(db, [c for c, _ in lex] + [c for c, _ in vec] + exact_chunk_ids)
+    provision_hits: Dict[str, str] = {}
+    try:
+        provision_hits = provision_chunk_ids(db, analysis, where, params)
+    except DB_ERRORS as exc:
+        db.rollback()
+        errors.append(f"provision lookup failed: {exc}")
+
+    cands = _load_candidates(db, [c for c, _ in lex] + [c for c, _ in vec] + exact_chunk_ids + list(provision_hits))
     for rank, (cid, _) in enumerate(lex):
         if cid in cands:
             cands[cid].lex_rank = rank
@@ -447,6 +483,10 @@ def retrieve(db, cfg, analysis: QueryAnalysis, filters: Filters, matter_id: Opti
     for cid in exact_chunk_ids:
         if cid in cands:
             cands[cid].exact = True
+            cands[cid].rrf += 1.0 / RRF_K
+    for cid, label in provision_hits.items():
+        if cid in cands:
+            cands[cid].provision = label
             cands[cid].rrf += 1.0 / RRF_K
 
     ranked = reranking.rerank(list(cands.values()), analysis)

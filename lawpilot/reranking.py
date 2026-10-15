@@ -69,11 +69,14 @@ def score_one(c, analysis, max_rrf: float, terms: List[str] = None) -> None:
         penalty = 0.06   # repealed codes (IPC, CrPC, Evidence Act) still govern pre-July-2024 matters
 
     c.score = round(0.45 * rel + 0.22 * c.coverage + 0.13 * authority + 0.07 * klass + 0.05 * juris
-                    + 0.04 * recency - penalty + (0.2 if c.exact else 0.0), 4)
+                    + 0.04 * recency - penalty + (0.2 if c.exact else 0.0)
+                    + (0.25 if getattr(c, "provision", "") else 0.0), 4)
 
     reasons = []
     if c.exact:
         reasons.append("Exact citation / case-name match")
+    if getattr(c, "provision", ""):
+        reasons.append(f"Provision named in the question: {c.provision}")
     if src.get("matter_id"):
         reasons.append("From this matter's documents")
     elif src.get("kind") in KIND_WEIGHT:
@@ -107,7 +110,7 @@ def rerank(cands: list, analysis) -> list:
 
 
 def is_relevant(c) -> bool:
-    return c.exact or c.coverage >= MIN_COVERAGE
+    return c.exact or bool(getattr(c, "provision", "")) or c.coverage >= MIN_COVERAGE
 
 
 def diversify(ranked: list, top_k: int, per_source: int = 2) -> list:

@@ -124,3 +124,19 @@ def test_matter_document_upload_and_delete(make_client):
     assert c.get(f"/api/sources/{r.json['id']}/file").status_code == 200
     assert c.delete(f"/api/matters/{mid}/documents/{r.json['id']}").status_code == 200
     assert c.get(f"/api/sources/{r.json['id']}").status_code == 404
+
+
+def test_named_provision_is_found_even_without_shared_words(admin):
+    """BNSS s.482 never says 'anticipatory'; asking about anticipatory bail must still surface it."""
+    text = ("480. When bail may be taken in case of non-bailable offence.—(1) When any person accused is brought "
+            "before a Court, he may be released on bail. (2) Further conditions apply under section 491. "
+            "482. Direction for grant of bail to person apprehending arrest.—(1) When any person has reason to "
+            "believe that he may be arrested on an accusation of having committed a non-bailable offence, he may "
+            "apply to the High Court or the Court of Session for a direction under this section.")
+    r = admin.post("/api/admin/corpus/text", {"title": "The Bharatiya Nagarik Suraksha Sanhita, 2023", "kind": "statute",
+                                              "act_name": "The Bharatiya Nagarik Suraksha Sanhita, 2023", "text": text})
+    assert r.status_code == 201
+    s = admin.post("/api/research", {"query": "can anticipatory bail be granted for attempt to murder?"}).json["session"]
+    hit = next(e for e in s["evidence"] if e["title"].startswith("The Bharatiya Nagarik"))
+    assert hit["pinpoint"].startswith("Section 482")
+    assert any("Provision named in the question" in r for r in hit["reasons"])
