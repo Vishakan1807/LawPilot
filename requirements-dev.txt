@@ -1,0 +1,5 @@
+-r requirements.txt
+pytest>=7
+# Throwaway local PostgreSQL + pgvector for running the tests against Postgres:
+#   LAWPILOT_TEST_BACKEND=postgres python -m pytest
+pgserver>=0.1.4

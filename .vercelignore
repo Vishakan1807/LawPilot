@@ -1,0 +1,11 @@
+tests/
+.github/
+instance/
+venv/
+.venv/
+.claude/
+Dockerfile
+docker-compose.yml
+cleanup_legacy.ps1
+requirements-dev.txt
+pytest.ini

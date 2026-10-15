@@ -1,0 +1,1698 @@
+[
+ {
+  "key": "sc-kesavananda-1973",
+  "title": "Kesavananda Bharati v. State of Kerala",
+  "citation": "(1973) 4 SCC 225",
+  "alt_citations": [
+   "AIR 1973 SC 1461",
+   "1973 Supp SCR 1"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "13-Judge Constitution Bench",
+  "decision_date": "1973-04-24",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Landmark 13-Judge bench ruling establishing the Basic Structure Doctrine. Parliament has wide amending power under Article 368 but cannot alter or emasculate the core features of the Constitution.",
+  "ratio": "Parliament's amending power under Article 368 does not extend to damaging or destroying the Basic Structure or essential framework of the Constitution of India. Overruled Golaknath.",
+  "propositions": [
+   "Basic Structure Doctrine limits Article 368 amending power.",
+   "Judicial review, federalism, secularism, and rule of law are inviolable basic features.",
+   "Article 368 does not confer constituent power to abrogate the Constitution."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Basic Structure",
+   "Article 368",
+   "Judicial Review"
+  ]
+ },
+ {
+  "key": "sc-maneka-1978",
+  "title": "Maneka Gandhi v. Union of India",
+  "citation": "(1978) 1 SCC 248",
+  "alt_citations": [
+   "AIR 1978 SC 597",
+   "[1978] 2 SCR 621"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "7-Judge Constitution Bench",
+  "decision_date": "1978-01-25",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Procedure established by law under Article 21 must satisfy the tests of reasonableness, fairness, and justice under Articles 14 and 19. Established the Golden Triangle.",
+  "ratio": "The procedure established by law depriving a person of personal liberty under Article 21 cannot be arbitrary, whimsical, or fanciful; it must be just, fair, and reasonable. Articles 14, 19, and 21 are mutually interconnected.",
+  "propositions": [
+   "Golden Triangle of fundamental rights: Articles 14, 19, and 21.",
+   "Substantive due process incorporated into Article 21.",
+   "Audi alteram partem is an integral component of natural justice."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Article 21",
+   "Personal Liberty",
+   "Golden Triangle",
+   "Natural Justice"
+  ]
+ },
+ {
+  "key": "sc-puttaswamy-2017",
+  "title": "Justice K.S. Puttaswamy (Retd.) v. Union of India",
+  "citation": "(2017) 10 SCC 1",
+  "alt_citations": [
+   "AIR 2017 SC 4161",
+   "2017 INSC 804"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "9-Judge Constitution Bench",
+  "decision_date": "2017-08-24",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Unanimous 9-Judge bench declaring Right to Privacy as an inalienable fundamental right protected under Article 21 and Part III of the Constitution. Expressly overruled M.P. Sharma and ADM Jabalpur.",
+  "ratio": "Privacy is an intrinsic element of the right to life and personal liberty under Article 21 and is protected as an essential facet of freedoms in Part III. State interference must satisfy legality, legitimate state aim, and proportionality.",
+  "propositions": [
+   "Right to privacy is a fundamental right under Article 21.",
+   "Expressly overruled M.P. Sharma (8J) and ADM Jabalpur (5J).",
+   "Informational privacy, bodily autonomy, and privacy of choice guaranteed.",
+   "Three-fold test: Legality, Legitimate State Aim, and Proportionality."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Right to Privacy",
+   "Article 21",
+   "Proportionality",
+   "Data Protection"
+  ]
+ },
+ {
+  "key": "sc-gopalan-1950",
+  "title": "A.K. Gopalan v. State of Madras",
+  "citation": "AIR 1950 SC 27",
+  "alt_citations": [
+   "[1950] SCR 88"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "6-Judge Constitution Bench",
+  "decision_date": "1950-05-19",
+  "legal_status": "overruled",
+  "source_type": "judgment",
+  "headnote": "Early constitutional judgment holding that Articles 19, 21, and 22 operate in separate, mutually exclusive silos. Overruled by R.C. Cooper and Maneka Gandhi.",
+  "ratio": "Article 21 'procedure established by law' requires only formal enactment by Legislature. Fundamental rights operate in silos. OVERRULED.",
+  "propositions": [
+   "Silo theory: Articles 19 and 21 are mutually exclusive (OVERRULED).",
+   "Procedure established by law does not equal American due process (OVERRULED)."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Article 21",
+   "Preventive Detention",
+   "Overruled"
+  ]
+ },
+ {
+  "key": "sc-mpsharma-1954",
+  "title": "M.P. Sharma v. Satish Chandra",
+  "citation": "AIR 1954 SC 300",
+  "alt_citations": [
+   "[1954] SCR 1077"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "8-Judge Constitution Bench",
+  "decision_date": "1954-03-15",
+  "legal_status": "overruled",
+  "source_type": "judgment",
+  "headnote": "8-Judge bench held that search warrants do not violate Article 19(1)(f) or Article 20(3) and no right to privacy exists under Indian Constitution. Overruled by Puttaswamy.",
+  "ratio": "The Constitution does not recognize a fundamental right to privacy analogous to the Fourth Amendment. OVERRULED by 9-judge bench in K.S. Puttaswamy (2017).",
+  "propositions": [
+   "Search and seizure does not violate Art. 20(3) or 19(1)(f).",
+   "Privacy denied as fundamental right (OVERRULED)."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Search and Seizure",
+   "Article 20(3)",
+   "Overruled"
+  ]
+ },
+ {
+  "key": "sc-kharaksingh-1963",
+  "title": "Kharak Singh v. State of U.P.",
+  "citation": "AIR 1963 SC 1295",
+  "alt_citations": [
+   "[1964] 1 SCR 332"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "6-Judge Constitution Bench",
+  "decision_date": "1962-12-18",
+  "legal_status": "partly_overruled",
+  "source_type": "judgment",
+  "headnote": "Struck down police surveillance regulations permitting midnight domiciliary visits under Article 21, but majority refused to recognize privacy right. Subba Rao J dissent affirmed in Puttaswamy.",
+  "ratio": "Domiciliary visits at night violate Article 21 personal liberty. General right to privacy limited by majority, but Subba Rao J minority view affirmed in Puttaswamy.",
+  "propositions": [
+   "Midnight police domiciliary visits violate Article 21.",
+   "Subba Rao J dissent laid groundwork for Right to Privacy."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Article 21",
+   "Surveillance",
+   "Police Powers"
+  ]
+ },
+ {
+  "key": "sc-rccooper-1970",
+  "title": "R.C. Cooper v. Union of India (Bank Nationalisation)",
+  "citation": "(1970) 1 SCC 248",
+  "alt_citations": [
+   "AIR 1970 SC 564",
+   "[1970] 3 SCR 530"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "11-Judge Constitution Bench",
+  "decision_date": "1970-02-10",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Overruled Gopalan silo theory. Fundamental rights form an integrated scheme, and the validity of state action is judged by its direct effect on citizens' rights.",
+  "ratio": "Direct effect and operation test governs fundamental rights scrutiny. The state cannot insulate legislation from Article 19 scrutiny merely because it relates to acquisition under Article 31.",
+  "propositions": [
+   "Direct effect test for testing constitutional validity.",
+   "Overruled Gopalan exclusivity doctrine."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Bank Nationalisation",
+   "Fundamental Rights Interconnectedness"
+  ]
+ },
+ {
+  "key": "sc-admjabalpur-1976",
+  "title": "ADM Jabalpur v. Shivkant Shukla (Habeas Corpus)",
+  "citation": "(1976) 2 SCC 521",
+  "alt_citations": [
+   "AIR 1976 SC 1207",
+   "[1976] Supp SCR 172"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "1976-04-28",
+  "legal_status": "overruled",
+  "source_type": "judgment",
+  "headnote": "Majority held habeas corpus unavailable during Emergency proclamation under Article 359(1). Khanna J dissented heroically. OVERRULED by Puttaswamy and 44th Constitutional Amendment.",
+  "ratio": "During Emergency, no person has locus standi to move writ of habeas corpus to enforce right to life under Article 21. OVERRULED. Khanna J dissent declared binding constitutional law.",
+  "propositions": [
+   "Emergency suspension of Article 21 (OVERRULED).",
+   "Right to life is inalienable and pre-dates the Constitution."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Emergency",
+   "Habeas Corpus",
+   "Article 21",
+   "Overruled"
+  ]
+ },
+ {
+  "key": "sc-shankari-1951",
+  "title": "Shankari Prasad v. Union of India",
+  "citation": "AIR 1951 SC 458",
+  "alt_citations": [
+   "[1952] SCR 89"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "1951-10-05",
+  "legal_status": "overruled",
+  "source_type": "judgment",
+  "headnote": "First major constitutional challenge to First Amendment. Held constituent power under Article 368 is distinct from ordinary law under Article 13(2). Overruled by Kesavananda.",
+  "ratio": "Parliament's amending power under Article 368 is unlimited and includes fundamental rights. OVERRULED.",
+  "propositions": [
+   "'Law' in Article 13(2) does not include constitutional amendments (Overruled)."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Article 368",
+   "Amending Power",
+   "Overruled"
+  ]
+ },
+ {
+  "key": "sc-golaknath-1967",
+  "title": "I.C. Golaknath v. State of Punjab",
+  "citation": "AIR 1967 SC 1643",
+  "alt_citations": [
+   "[1967] 2 SCR 762"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "11-Judge Constitution Bench",
+  "decision_date": "1967-02-27",
+  "legal_status": "overruled",
+  "source_type": "judgment",
+  "headnote": "11-Judge bench held Parliament cannot abridge or take away Part III rights by constitutional amendment. Prospective overruling doctrine applied. Overruled by Kesavananda.",
+  "ratio": "Fundamental rights are transcendental and immutable; Parliament cannot amend Part III under Article 368. OVERRULED by 13-Judge bench in Kesavananda Bharati.",
+  "propositions": [
+   "Prospective overruling doctrine introduced in India.",
+   "Fundamental rights cannot be amended (OVERRULED)."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Article 368",
+   "Part III",
+   "Prospective Overruling",
+   "Overruled"
+  ]
+ },
+ {
+  "key": "sc-minerva-1980",
+  "title": "Minerva Mills Ltd. v. Union of India",
+  "citation": "(1980) 3 SCC 625",
+  "alt_citations": [
+   "AIR 1980 SC 1789",
+   "[1981] 1 SCR 206"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "1980-07-31",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Struck down clauses (4) and (5) of Article 368 inserted by 42nd Amendment. Limited amending power of Parliament is itself an essential feature of the Basic Structure.",
+  "ratio": "A limited amending power is one of the basic features of Indian Constitution. Parliament cannot expand its limited power of amendment into an absolute power. Harmony between Part III and Part IV is a basic feature.",
+  "propositions": [
+   "Limited amending power is a basic feature.",
+   "Clauses (4) and (5) of Article 368 unconstitutional.",
+   "Balance between Fundamental Rights and Directive Principles is a basic feature."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Basic Structure",
+   "Article 368",
+   "Part III vs Part IV"
+  ]
+ },
+ {
+  "key": "sc-bommai-1994",
+  "title": "S.R. Bommai v. Union of India",
+  "citation": "(1994) 3 SCC 1",
+  "alt_citations": [
+   "AIR 1994 SC 1918",
+   "1994 INSC 141"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "9-Judge Constitution Bench",
+  "decision_date": "1994-03-11",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "9-Judge bench ruling holding that Secularism and Federalism are part of the Basic Structure. Proclamation of President's Rule under Article 356 is subject to judicial review.",
+  "ratio": "Article 356 proclamation is amenable to judicial review. The court can examine whether material existed for satisfaction and can restore a dissolved state assembly.",
+  "propositions": [
+   "Secularism and Federalism are basic features.",
+   "Article 356 subject to judicial review.",
+   "Floor test is the only valid forum to test majority of ministry."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Article 356",
+   "Secularism",
+   "Federalism",
+   "Judicial Review"
+  ]
+ },
+ {
+  "key": "sc-shayarabano-2017",
+  "title": "Shayara Bano v. Union of India",
+  "citation": "(2017) 9 SCC 1",
+  "alt_citations": [
+   "AIR 2017 SC 4609",
+   "2017 INSC 815"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "2017-08-22",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Declared instantaneous triple talaq (talaq-e-biddat) void, illegal, and unconstitutional. Established test of manifest arbitrariness under Article 14.",
+  "ratio": "Talaq-e-biddat is manifestly arbitrary and violative of Article 14 as it allows unilateral, irrevocable dissolution of marriage without reconciliation efforts. Manifest arbitrariness is a distinct ground to strike down legislation.",
+  "propositions": [
+   "Triple talaq declared void and unconstitutional.",
+   "Manifest arbitrariness established as a ground under Article 14.",
+   "Personal laws subject to fundamental rights scrutiny."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Article 14",
+   "Triple Talaq",
+   "Manifest Arbitrariness",
+   "Family Law"
+  ]
+ },
+ {
+  "key": "sc-navtej-2018",
+  "title": "Navtej Singh Johar v. Union of India",
+  "citation": "(2018) 10 SCC 1",
+  "alt_citations": [
+   "AIR 2018 SC 4321",
+   "2018 INSC 790"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "2018-09-06",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "5-Judge Constitution Bench decriminalized consensual homosexual sexual acts between adults by reading down Section 377 IPC. Overruled Suresh Kumar Koushal.",
+  "ratio": "Section 377 IPC, insofar as it criminalizes consensual sexual acts between consenting adults in private, violates Articles 14, 15, 19, and 21. Constitutional morality prevails over majoritarian or public morality.",
+  "propositions": [
+   "Section 377 IPC read down.",
+   "Constitutional morality vs social morality.",
+   "Sexual orientation is an innate facet of dignity and privacy."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Section 377 IPC",
+   "Article 21",
+   "Article 14",
+   "Constitutional Morality"
+  ]
+ },
+ {
+  "key": "sc-shreyasinghal-2015",
+  "title": "Shreya Singhal v. Union of India",
+  "citation": "(2015) 5 SCC 1",
+  "alt_citations": [
+   "AIR 2015 SC 1523",
+   "2015 INSC 244"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "2015-03-24",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Struck down Section 66A of the Information Technology Act, 2000 in its entirety as violative of Article 19(1)(a). Clarified intermediary safe harbor under Section 79.",
+  "ratio": "Section 66A IT Act suffers from vagueness and overbreadth, creating a chilling effect on speech. Clear and present danger / incitement test distinguished from advocacy. Intermediaries under S. 79 must act only upon court or government orders.",
+  "propositions": [
+   "Section 66A IT Act unconstitutional.",
+   "Distinction between discussion, advocacy, and incitement.",
+   "Section 79 intermediary liability conditioned on court/govt direction."
+  ],
+  "tags": [
+   "Information Technology",
+   "Article 19(1)(a)",
+   "Free Speech",
+   "Section 66A",
+   "Intermediary Safe Harbor"
+  ]
+ },
+ {
+  "key": "sc-electoralbonds-2024",
+  "title": "Association for Democratic Reforms v. Union of India (Electoral Bonds)",
+  "citation": "(2024) 5 SCC 1",
+  "alt_citations": [
+   "2024 INSC 113"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "2024-02-15",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Unanimous 5-Judge Constitution Bench struck down the Electoral Bond Scheme and amendments to Representation of the People Act, Companies Act, and Income Tax Act as unconstitutional under Article 19(1)(a).",
+  "ratio": "Voters' Right to Information regarding funding of political parties is an essential facet of freedom of speech under Article 19(1)(a). Unlimited corporate funding promotes quid pro quo and violates free and fair elections.",
+  "propositions": [
+   "Electoral Bond scheme held unconstitutional.",
+   "Right to Information includes political campaign financing.",
+   "Corporate funding treated distinctly from individual contributions."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Article 19(1)(a)",
+   "Electoral Bonds",
+   "Right to Information",
+   "Elections"
+  ]
+ },
+ {
+  "key": "sc-inreinterplay-2023",
+  "title": "In Re Interplay Between Arbitration Agreements and Stamp Act",
+  "citation": "2023 INSC 1066",
+  "alt_citations": [
+   "(2024) 6 SCC 1"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "7-Judge Constitution Bench",
+  "decision_date": "2023-12-13",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Unanimously overruled NN Global 5-Judge bench. Held that non-stamping or insufficient stamping of a commercial contract does not render the arbitration agreement void ab initio. Defect is curable.",
+  "ratio": "An unstamped or insufficiently stamped agreement is not void ab initio; it is only inadmissible in evidence under Section 35 Stamp Act, which is a curable irregularity. Under Section 16 (competence-competence), the arbitral tribunal, not the Section 11 court, has jurisdiction to determine stamping.",
+  "propositions": [
+   "Overruled NN Global 5-Judge bench and SMS Tea Estates.",
+   "Non-stamping is a curable defect under the Stamp Act, 1899.",
+   "Section 11 court enquiry strictly confined to prima facie existence of arbitration agreement.",
+   "Arbitral tribunal has sole competence to decide stamping under Section 16."
+  ],
+  "tags": [
+   "Arbitration",
+   "Stamp Act",
+   "Section 11",
+   "Section 16",
+   "Competence-Competence",
+   "In Re Interplay"
+  ]
+ },
+ {
+  "key": "sc-nnglobal5j-2023",
+  "title": "N.N. Global Mercantile Pvt. Ltd. v. Indo Unique Flame Ltd. (5-Judge)",
+  "citation": "(2023) 7 SCC 1",
+  "alt_citations": [
+   "2023 INSC 429"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "2023-04-25",
+  "legal_status": "overruled",
+  "source_type": "judgment",
+  "headnote": "3:2 majority held unstamped arbitration agreement void and unenforceable at Section 11 stage. OVERRULED by 7-Judge bench In Re Interplay.",
+  "ratio": "Unstamped contract containing arbitration clause cannot be acted upon and is non-existent in law until impounded and validated. OVERRULED.",
+  "propositions": [
+   "Unstamped arbitration clause void at Section 11 stage (OVERRULED)."
+  ],
+  "tags": [
+   "Arbitration",
+   "Stamp Act",
+   "Section 11",
+   "Overruled"
+  ]
+ },
+ {
+  "key": "sc-balco-2012",
+  "title": "Bharat Aluminium Co. (BALCO) v. Kaiser Aluminium Technical Services",
+  "citation": "(2012) 9 SCC 552",
+  "alt_citations": [
+   "2012 INSC 368"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "2012-09-06",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Established the territoriality principle in Indian arbitration law. Part I of Arbitration Act 1996 applies only to arbitrations seated within India. Prospectively overruled Bhatia International.",
+  "ratio": "Part I of the Arbitration and Conciliation Act, 1996 applies only where the place/seat of arbitration is in India. Indian courts have no supervisory jurisdiction over foreign-seated arbitrations under Part I (prospective from Sept 6, 2012).",
+  "propositions": [
+   "Territoriality principle: Part I applies only to India-seated arbitrations.",
+   "Prospectively overruled Bhatia International (2002).",
+   "Seat of arbitration determines governing curial law."
+  ],
+  "tags": [
+   "Arbitration",
+   "Seat of Arbitration",
+   "Part I vs Part II",
+   "Foreign Award",
+   "Territoriality"
+  ]
+ },
+ {
+  "key": "sc-coxkings-2024",
+  "title": "Cox and Kings Ltd. v. SAP India Pvt. Ltd.",
+  "citation": "(2024) 4 SCC 1",
+  "alt_citations": [
+   "2023 INSC 1051"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "2023-12-06",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "5-Judge Constitution Bench upheld the Group of Companies doctrine in Indian arbitration, reconciling it with corporate separateness and consent principles under Section 7.",
+  "ratio": "Group of Companies doctrine is an intrinsic aspect of Section 7 of the Arbitration Act. A non-signatory corporate affiliate can be bound by an arbitration agreement if mutual intent to bind is demonstrated through performance and involvement in negotiation.",
+  "propositions": [
+   "Group of Companies doctrine affirmed under Section 7.",
+   "Non-signatory bound based on conduct, participation, and economic reality.",
+   "Referral court under Section 11 must leave final determination of non-signatory to arbitral tribunal."
+  ],
+  "tags": [
+   "Arbitration",
+   "Group of Companies",
+   "Non-Signatory",
+   "Section 7",
+   "Section 11"
+  ]
+ },
+ {
+  "key": "sc-perkins-2020",
+  "title": "Perkins Eastman Architects DPC v. HSCC (India) Ltd.",
+  "citation": "(2020) 20 SCC 760",
+  "alt_citations": [
+   "2019 INSC 1297"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "2019-11-26",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "A person who is ineligible to act as an arbitrator under Section 12(5) read with Seventh Schedule cannot unilaterally nominate a sole arbitrator. Applied TRF Ltd.",
+  "ratio": "A party having an interest in the outcome of the dispute is disqualified from acting as an arbitrator, and consequently cannot unilaterally appoint a sole arbitrator. Impartiality and independence are paramount.",
+  "propositions": [
+   "Unilateral appointment of sole arbitrator impermissible under Section 12(5).",
+   "Disqualification to act equals disqualification to appoint.",
+   "High Court will appoint independent arbitrator under Section 11(6)."
+  ],
+  "tags": [
+   "Arbitration",
+   "Section 12(5)",
+   "Section 11(6)",
+   "Unilateral Appointment",
+   "Impartiality"
+  ]
+ },
+ {
+  "key": "sc-vidyadrolia-2021",
+  "title": "Vidya Drolia v. Durga Trading Corporation",
+  "citation": "(2021) 2 SCC 1",
+  "alt_citations": [
+   "2020 INSC 697"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Full Bench",
+  "decision_date": "2020-12-14",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Comprehensive 3-Judge bench ruling laying down the four-fold test for non-arbitrability of disputes and standard of review under Sections 8 and 11.",
+  "ratio": "A dispute is non-arbitrable when: (1) it relates to actions in rem; (2) affects third-party rights; (3) pertains to inalienable sovereign functions; or (4) is expressly excluded by statute. At Section 11 stage, court exercises prima facie review to 'weed out deadwood'.",
+  "propositions": [
+   "Four-fold test of arbitrability.",
+   "Landlord-tenant disputes under Transfer of Property Act are arbitrable.",
+   "Section 11 review is prima facie; 'when in doubt, refer'."
+  ],
+  "tags": [
+   "Arbitration",
+   "Arbitrability",
+   "Section 11",
+   "Section 8",
+   "Landlord-Tenant"
+  ]
+ },
+ {
+  "key": "sc-patilautomation-2022",
+  "title": "Patil Automation Pvt. Ltd. v. Rakheja Engineers Pvt. Ltd.",
+  "citation": "(2022) 10 SCC 1",
+  "alt_citations": [
+   "2022 INSC 837"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "2022-08-17",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Pre-institution mediation under Section 12A of the Commercial Courts Act, 2015 is mandatory. Commercial suits filed without exhausting Section 12A are liable to be rejected under Order VII Rule 11 CPC.",
+  "ratio": "Section 12A of the Commercial Courts Act, 2015 is mandatory and not directory, except where urgent interim relief is contemplated. A commercial plaint filed without compliance with Section 12A is rejected under Order VII Rule 11 CPC.",
+  "propositions": [
+   "Section 12A Commercial Courts Act is strictly mandatory.",
+   "Failure to attempt pre-institution mediation results in rejection under Order VII Rule 11 CPC.",
+   "Urgent interim relief is the only exception."
+  ],
+  "tags": [
+   "Commercial Courts Act",
+   "Section 12A",
+   "Pre-Institution Mediation",
+   "Order VII Rule 11",
+   "Mandatory"
+  ]
+ },
+ {
+  "key": "sc-associatebuilders-2015",
+  "title": "Associate Builders v. Delhi Development Authority (DDA)",
+  "citation": "(2015) 3 SCC 49",
+  "alt_citations": [
+   "AIR 2015 SC 620",
+   "2014 INSC 895"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "2014-11-25",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Definitive ruling on the scope of challenging arbitral awards under Section 34 on grounds of 'public policy of India' and 'patent illegality'.",
+  "ratio": "Under Section 34, the court does not sit in appeal over an arbitral award. An award can be set aside only if it violates fundamental policy of Indian law, interest of India, justice or morality, or is patently illegal. The arbitrator is the ultimate master of facts.",
+  "propositions": [
+   "Section 34 is not an appellate proceeding.",
+   "Arbitrator's interpretation of contract is conclusive if plausible.",
+   "Patent illegality must go to the root of the matter."
+  ],
+  "tags": [
+   "Arbitration",
+   "Section 34",
+   "Public Policy",
+   "Patent Illegality",
+   "Enforcement"
+  ]
+ },
+ {
+  "key": "sc-swissribbons-2019",
+  "title": "Swiss Ribbons Pvt. Ltd. v. Union of India",
+  "citation": "(2019) 4 SCC 17",
+  "alt_citations": [
+   "AIR 2019 SC 739",
+   "2019 INSC 79"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "2019-01-25",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Upheld the constitutional validity of the Insolvency and Bankruptcy Code, 2016 (IBC) in its entirety, including the distinction between financial and operational creditors.",
+  "ratio": "IBC is an economic legislation aimed at revival of corporate debtor and maximization of assets, not recovery. The classification between financial creditors (capital providers) and operational creditors is rational and meets Article 14.",
+  "propositions": [
+   "Constitutional validity of IBC upheld.",
+   "Financial creditors vs Operational creditors distinction is reasonable.",
+   "Section 29A disqualification for defaulting promoters upheld."
+  ],
+  "tags": [
+   "Insolvency",
+   "IBC 2016",
+   "Financial Creditors",
+   "Article 14",
+   "Corporate Debtor"
+  ]
+ },
+ {
+  "key": "sc-kusumingots-2020",
+  "title": "Kusum Ingots & Alloys Ltd. v. Pennar Peterson Securities Ltd.",
+  "citation": "(2020) 14 SCC 518",
+  "alt_citations": [
+   "2020 INSC 450"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Full Bench",
+  "decision_date": "2020-07-21",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Jurisdiction under Section 138 NI Act: Overruled Dashrath Rupsingh Rathod in accordance with the 2015 Negotiable Instruments Amendment Act (Section 142(2)).",
+  "ratio": "Under Section 142(2) NI Act, territorial jurisdiction for Section 138 complaint lies where the payee maintains an account (if cheque delivered for clearing) or branch of drawee bank. Restored commercial convenience.",
+  "propositions": [
+   "Section 142(2) NI Act governs territorial jurisdiction.",
+   "Overruled Dashrath Rupsingh's restrictive drawee bank rule.",
+   "Complaint maintainable where payee branch is situated."
+  ],
+  "tags": [
+   "NI Act",
+   "Section 138",
+   "Territorial Jurisdiction",
+   "Cheque Dishonour"
+  ]
+ },
+ {
+  "key": "sc-dashrath-2014",
+  "title": "Dashrath Rupsingh Rathod v. State of Maharashtra",
+  "citation": "(2014) 9 SCC 129",
+  "alt_citations": [
+   "AIR 2014 SC 3519"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Full Bench",
+  "decision_date": "2014-08-01",
+  "legal_status": "overruled",
+  "source_type": "judgment",
+  "headnote": "Held that Section 138 complaints can only be filed where the drawee bank is situated. Overruled by Parliament via Section 142(2) Amendment and Kusum Ingots.",
+  "ratio": "Territorial jurisdiction for Section 138 confined strictly to place of drawee bank branch. OVERRULED by statute and judicial affirmation.",
+  "propositions": [
+   "Strict drawee bank branch jurisdiction (OVERRULED)."
+  ],
+  "tags": [
+   "NI Act",
+   "Section 138",
+   "Jurisdiction",
+   "Overruled"
+  ]
+ },
+ {
+  "key": "sc-meters-2018",
+  "title": "Meters and Instruments Pvt. Ltd. v. Kanchan Mehta",
+  "citation": "(2018) 1 SCC 560",
+  "alt_citations": [
+   "AIR 2017 SC 4594"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Full Bench",
+  "decision_date": "2017-10-05",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Section 138 offence is primarily a civil wrong with criminal sanction for recovery. Court can compound or discharge accused upon payment of cheque amount plus costs even without complainant consent.",
+  "ratio": "Under Section 143 and 147 NI Act, trial court is empowered to close proceedings if accused offers to pay cheque amount along with reasonable interest and litigation costs, even without complainant's express consent.",
+  "propositions": [
+   "Section 138 is primarily compensatory, not punitive.",
+   "Court can discharge accused on full compensation under Section 147.",
+   "Summary trial procedures to be expedited under Section 143."
+  ],
+  "tags": [
+   "NI Act",
+   "Section 138",
+   "Section 147",
+   "Compounding",
+   "Summary Trial"
+  ]
+ },
+ {
+  "key": "sc-rangappa-2010",
+  "title": "Rangappa v. Sri Mohan",
+  "citation": "(2010) 11 SCC 441",
+  "alt_citations": [
+   "AIR 2010 SC 1898"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Full Bench",
+  "decision_date": "2010-05-07",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Section 139 presumption includes the existence of a legally enforceable debt or liability. Accused can rebut by preponderance of probabilities.",
+  "ratio": "The presumption mandated by Section 139 includes the presumption of existence of a legally enforceable debt. The standard of proof to rebut is on a preponderance of probabilities, which can be drawn from complainant's cross-examination without accused stepping into witness box.",
+  "propositions": [
+   "Section 139 presumption includes existence of debt.",
+   "Standard of rebuttal is preponderance of probabilities.",
+   "Accused can rely on material submitted by complainant."
+  ],
+  "tags": [
+   "NI Act",
+   "Section 138",
+   "Section 139",
+   "Reverse Burden",
+   "Presumption"
+  ]
+ },
+ {
+  "key": "sc-birsingh-2019",
+  "title": "Bir Singh v. Mukesh Kumar",
+  "citation": "(2019) 4 SCC 197",
+  "alt_citations": [
+   "AIR 2019 SC 1083",
+   "2019 INSC 152"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "2019-02-06",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Handing over a signed blank cheque voluntarily attracts Section 139 presumption; the drawer is liable if filled up subsequently by the payee.",
+  "ratio": "A meaningful reading of Section 20, 87, and 139 NI Act shows that once signing and delivery of a cheque is admitted, subsequent filling up of the amount and date by payee does not invalidate the cheque or negate presumption under Section 139.",
+  "propositions": [
+   "Signed blank cheque attracts Section 139 presumption.",
+   "Holder in due course has implied authority to complete instrument (Section 20).",
+   "Fiduciary liability attaches to drawer."
+  ],
+  "tags": [
+   "NI Act",
+   "Section 138",
+   "Signed Blank Cheque",
+   "Section 20",
+   "Section 139"
+  ]
+ },
+ {
+  "key": "sc-ccalavihaji-2007",
+  "title": "C.C. Alavi Haji v. Palapetty Muhammed",
+  "citation": "(2007) 6 SCC 555",
+  "alt_citations": [
+   "2007 INSC 587"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Full Bench",
+  "decision_date": "2007-05-18",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Statutory legal notice under Section 138(b): Despatch to correct address constitutes deemed service under Section 27 General Clauses Act. 15-day cure period begins from receipt.",
+  "ratio": "When a notice is sent by registered post to the correct address of the drawer, service is deemed under Section 27 General Clauses Act. If drawer claims non-receipt, he can pay within 15 days of court summons to escape conviction.",
+  "propositions": [
+   "Deemed service under Section 27 General Clauses Act.",
+   "Drawer can pay within 15 days of receiving summons to avoid criminal penalty.",
+   "Section 138(b) notice requirement strictly interpreted."
+  ],
+  "tags": [
+   "NI Act",
+   "Section 138(b)",
+   "Statutory Notice",
+   "Deemed Service",
+   "15-Day Cure"
+  ]
+ },
+ {
+  "key": "sc-lalitakumari-2014",
+  "title": "Lalita Kumari v. Govt. of U.P.",
+  "citation": "(2014) 2 SCC 1",
+  "alt_citations": [
+   "AIR 2014 SC 187",
+   "2013 INSC 1166"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "2013-11-12",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "5-Judge Constitution Bench held that registration of an FIR under Section 154 CrPC is mandatory if the information discloses commission of a cognizable offence.",
+  "ratio": "Section 154(1) CrPC uses the word 'shall' and is mandatory. Police officer cannot conduct preliminary enquiry before registering FIR if information discloses a cognizable offence. Preliminary enquiry allowed only in matrimonial, commercial, medical negligence, and corruption cases, to be completed in 7 days.",
+  "propositions": [
+   "Mandatory registration of FIR under Section 154 CrPC / Section 173 BNSS.",
+   "No discretion with police to refuse registration if cognizable offence disclosed.",
+   "Preliminary enquiry restricted to specified categories."
+  ],
+  "tags": [
+   "Criminal Procedure",
+   "Section 154 CrPC",
+   "BNSS Section 173",
+   "FIR",
+   "Mandatory"
+  ]
+ },
+ {
+  "key": "sc-arneshkumar-2014",
+  "title": "Arnesh Kumar v. State of Bihar",
+  "citation": "(2014) 8 SCC 273",
+  "alt_citations": [
+   "AIR 2014 SC 2756",
+   "2014 INSC 492"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "2014-07-02",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Mandatory guidelines to arrest under Section 41 CrPC for offences punishable with imprisonment up to 7 years. Section 41A notice mandatory; police cannot automatically arrest in 498A IPC cases.",
+  "ratio": "Arrest should not be made automatically or routinely in cases punishable with imprisonment up to 7 years. Police must satisfy Section 41(1)(b) checklist and Magistrate must record satisfaction before authorizing remand under Section 167 CrPC.",
+  "propositions": [
+   "Section 41 checklist mandatory for offences <= 7 years.",
+   "Section 41A CrPC notice of appearance is rule.",
+   "Magistrate dereliction attracts disciplinary proceedings."
+  ],
+  "tags": [
+   "Criminal Procedure",
+   "Section 41 CrPC",
+   "Section 41A",
+   "Arrest",
+   "Section 498A IPC"
+  ]
+ },
+ {
+  "key": "sc-dkbasu-1997",
+  "title": "D.K. Basu v. State of West Bengal",
+  "citation": "(1997) 1 SCC 416",
+  "alt_citations": [
+   "AIR 1997 SC 610",
+   "1996 INSC 1572"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "1996-12-18",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Landmark 11-point requirements governing arrest and custodial interrogation to curb custodial violence and deaths. Codified into Section 41B, 41D, 50A CrPC.",
+  "ratio": "Custodial violence and torture violate Article 21. Prescribed 11 mandatory guidelines including memo of arrest, right to inform relative, medical examination every 48 hours, and right to consult advocate during interrogation.",
+  "propositions": [
+   "11 mandatory guidelines for arrest and detention.",
+   "Memo of arrest signed by witness.",
+   "Medical inspection every 48 hours.",
+   "Failure punishable under departmental action and contempt of court."
+  ],
+  "tags": [
+   "Criminal Procedure",
+   "Custodial Violence",
+   "Article 21",
+   "Arrest Guidelines",
+   "Section 41B"
+  ]
+ },
+ {
+  "key": "sc-satenderantil-2022",
+  "title": "Satender Kumar Antil v. Central Bureau of Investigation",
+  "citation": "(2022) 10 SCC 51",
+  "alt_citations": [
+   "2022 INSC 690"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "2022-07-11",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Comprehensive guidelines for grant of bail under Section 436/437/439 CrPC. Offence categorisation (A, B, C, D) and mandate to dispose bail applications within two weeks.",
+  "ratio": "Bail is rule, jail is exception. Categorized offences into Category A (<=7 years, no arrest needed), Category B (death/life imprisonment), Category C (special acts like NDPS/PMLA), and Category D (economic offences). Trial courts must decide bail within 2 weeks and anticipatory bail within 6 weeks.",
+  "propositions": [
+   "Category A to D classification for bail.",
+   "Two-week timeline for regular bail disposal.",
+   "Rigid compliance with Section 41 and 41A CrPC."
+  ],
+  "tags": [
+   "Criminal Procedure",
+   "Bail",
+   "Section 437",
+   "Section 439",
+   "Satender Antil"
+  ]
+ },
+ {
+  "key": "sc-sushilaaggarwal-2020",
+  "title": "Sushila Aggarwal v. State (NCT of Delhi)",
+  "citation": "(2020) 5 SCC 1",
+  "alt_citations": [
+   "2020 INSC 106"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "2020-01-29",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "5-Judge Constitution Bench affirmed that anticipatory bail under Section 438 CrPC should not be invariably limited to a fixed period; it normally continues till the end of the trial.",
+  "ratio": "Protection granted under Section 438 CrPC does not automatically end upon filing of chargesheet or summoning by court. Conditions can be imposed based on facts, but time limits are not an invariable rule. Reaffirmed Gurbaksh Singh Sibbia.",
+  "propositions": [
+   "Antigravity bail normally operates till conclusion of trial.",
+   "No blanket requirement of expiring upon filing of chargesheet.",
+   "Reaffirmed 5-Judge bench in Sibbia."
+  ],
+  "tags": [
+   "Criminal Procedure",
+   "Section 438 CrPC",
+   "Anticipatory Bail",
+   "Life of Bail"
+  ]
+ },
+ {
+  "key": "sc-pulukurikottaya-1947",
+  "title": "Pulukuri Kottaya v. King-Emperor",
+  "citation": "AIR 1947 PC 67",
+  "alt_citations": [
+   "[1947] 49 BOMLR 508"
+  ],
+  "court": "Privy Council",
+  "bench": "Judicial Committee",
+  "decision_date": "1947-01-14",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Locus classicus on Section 27 Indian Evidence Act, 1872 (Section 23 Bharatiya Sakshya Adhiniyam, 2023): Admissibility of discovery of facts pursuant to accused's statement in custody.",
+  "ratio": "Section 27 is an exception to Sections 25 and 26. Only that information which relates distinctly to the fact thereby discovered (object, place, concealment) is admissible; confession of guilt is excluded.",
+  "propositions": [
+   "Fact discovered includes place and object discovered.",
+   "Confessional narrative preceding the discovery is inadmissible.",
+   "Foundational test for Section 27 Evidence Act / Section 23 BSA."
+  ],
+  "tags": [
+   "Evidence Act",
+   "Section 27 Evidence Act",
+   "BSA Section 23",
+   "Recovery",
+   "Confession"
+  ]
+ },
+ {
+  "key": "sc-sharadbirdhichand-1984",
+  "title": "Sharad Birdhichand Sarda v. State of Maharashtra",
+  "citation": "(1984) 4 SCC 116",
+  "alt_citations": [
+   "AIR 1984 SC 1622",
+   "1984 INSC 121"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Full Bench",
+  "decision_date": "1984-07-17",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Established the 'Panchsheel' (five golden principles) governing proof of guilt based on circumstantial evidence in criminal trials.",
+  "ratio": "In cases of circumstantial evidence: (1) circumstances must be fully established; (2) facts must be consistent only with guilt; (3) circumstances must be conclusive; (4) must exclude every hypothesis except guilt; (5) complete chain without missing links.",
+  "propositions": [
+   "Panchsheel of circumstantial evidence.",
+   "Distance between 'may be true' and 'must be true' must be crossed.",
+   "Absence of motive in circumstantial cases weakens prosecution."
+  ],
+  "tags": [
+   "Criminal Law",
+   "Circumstantial Evidence",
+   "Panchsheel",
+   "Standard of Proof"
+  ]
+ },
+ {
+  "key": "sc-dalpatkumar-1992",
+  "title": "Dalpat Kumar v. Prahlad Singh",
+  "citation": "(1992) 1 SCC 719",
+  "alt_citations": [
+   "AIR 1993 SC 276"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "1991-11-20",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Three fundamental requirements for grant of temporary injunction under Order XXXIX Rules 1 and 2 CPC: prima facie case, balance of convenience, and irreparable injury.",
+  "ratio": "Grant of temporary injunction is an equitable relief. Burden is on plaintiff to establish: (1) prima facie case; (2) balance of convenience in his favour; and (3) irreparable loss which cannot be compensated in money terms.",
+  "propositions": [
+   "Order XXXIX Rules 1 & 2 three pillars: Prima Facie Case, Balance of Convenience, Irreparable Injury.",
+   "Injunction is an equitable relief requiring clean hands."
+  ],
+  "tags": [
+   "Civil Procedure",
+   "CPC Order XXXIX",
+   "Injunction",
+   "Interim Relief",
+   "Balance of Convenience"
+  ]
+ },
+ {
+  "key": "sc-scgcontracts-2019",
+  "title": "SCG Contracts (India) Pvt. Ltd. v. K.S. Chamankar Infrastructure",
+  "citation": "(2019) 12 SCC 210",
+  "alt_citations": [
+   "AIR 2019 SC 2691",
+   "2019 INSC 172"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "2019-02-12",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "120-day outer limit for filing Written Statement in Commercial Suits under Order VIII Rule 1 CPC is strictly mandatory; court has no inherent power to condone delay beyond 120 days.",
+  "ratio": "Under the proviso to Order VIII Rule 1 CPC as amended by the Commercial Courts Act, 2015, the right of the defendant to file a written statement stands forfeited on expiry of 120 days from service of summons. Courts cannot use Section 151 CPC to bypass the statutory bar.",
+  "propositions": [
+   "Order VIII Rule 1 CPC 120-day limit in commercial suits is non-extendable.",
+   "Right of defence forfeited on 121st day.",
+   "Inherent powers under Section 151 cannot override express statutory prohibitions."
+  ],
+  "tags": [
+   "Commercial Courts Act",
+   "CPC Order VIII Rule 1",
+   "Written Statement",
+   "Limitation",
+   "Mandatory"
+  ]
+ },
+ {
+  "key": "sc-dahiben-2020",
+  "title": "Dahiben v. Arvindbhai Kalyanji Bhanusali",
+  "citation": "(2020) 7 SCC 366",
+  "alt_citations": [
+   "2020 INSC 445"
+  ],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Division Bench",
+  "decision_date": "2020-07-09",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Scope of rejection of plaint under Order VII Rule 11 CPC. An illusory cause of action created by clever drafting must be rejected at the threshold.",
+  "ratio": "For Order VII Rule 11(a) and (d), the court looks strictly at the plaint averments and documents filed. Clever drafting creating an illusion of a cause of action cannot defeat rejection if the claim is manifestly barred by limitation or discloses no clear right to sue.",
+  "propositions": [
+   "Order VII Rule 11 looks only at plaint and annexed documents.",
+   "Illusory cause of action must be nipped in the bud.",
+   "Suit barred by limitation rejected at threshold under Rule 11(d)."
+  ],
+  "tags": [
+   "Civil Procedure",
+   "CPC Order VII Rule 11",
+   "Rejection of Plaint",
+   "Cause of Action",
+   "Limitation"
+  ]
+ },
+ {
+  "key": "statute-const-art21",
+  "title": "Constitution of India, 1950 — Article 21",
+  "citation": "Article 21, Constitution of India",
+  "alt_citations": [],
+  "court": "Constituent Assembly of India",
+  "bench": "Foundational Constitutional Charter",
+  "decision_date": "1950",
+  "legal_status": "good_law",
+  "source_type": "statute",
+  "headnote": "Protection of life and personal liberty: No person shall be deprived of his life or personal liberty except according to procedure established by law.",
+  "ratio": "Inalienable fundamental right embodying right to privacy, dignified life, speedy trial, clean environment, and procedural fairness under the Golden Triangle.",
+  "propositions": [
+   "Right to Life and Personal Liberty.",
+   "Substantive reasonableness required for deprivation."
+  ],
+  "tags": [
+   "Constitution of India",
+   "Article 21",
+   "Fundamental Rights",
+   "Statute"
+  ]
+ },
+ {
+  "key": "statute-const-art226",
+  "title": "Constitution of India, 1950 — Article 226",
+  "citation": "Article 226, Constitution of India",
+  "alt_citations": [],
+  "court": "Constituent Assembly of India",
+  "bench": "Foundational Constitutional Charter",
+  "decision_date": "1950",
+  "legal_status": "good_law",
+  "source_type": "statute",
+  "headnote": "Power of High Courts to issue certain writs: High Courts have plenary writ jurisdiction for the enforcement of Part III fundamental rights and for any other purpose.",
+  "ratio": "High Court writ jurisdiction is wider than Supreme Court under Article 32, as it covers fundamental rights as well as non-fundamental legal rights ('for any other purpose'). Cannot be ousted by ordinary legislation.",
+  "propositions": [
+   "Plenary writ jurisdiction of High Courts.",
+   "Writs: Habeas Corpus, Mandamus, Prohibition, Quo Warranto, Certiorari."
+  ],
+  "tags": [
+   "Constitution of India",
+   "Article 226",
+   "Writ Jurisdiction",
+   "High Court",
+   "Statute"
+  ]
+ },
+ {
+  "key": "statute-ni-s138",
+  "title": "Negotiable Instruments Act, 1881 — Section 138",
+  "citation": "Section 138, Negotiable Instruments Act, 1881",
+  "alt_citations": [],
+  "court": "Parliament of India",
+  "bench": "Statutory Provision",
+  "decision_date": "1881",
+  "legal_status": "good_law",
+  "source_type": "statute",
+  "headnote": "Dishonour of cheque for insufficiency of funds in the account. Imposes criminal liability with imprisonment up to two years or fine up to twice the cheque amount.",
+  "ratio": "Ingredients: (1) Cheque drawn for discharge of debt/liability; (2) Presented within validity (3 months); (3) Returned unpaid; (4) Demand notice within 30 days of dishonour memo; (5) Failure to pay within 15 days of notice receipt.",
+  "propositions": [
+   "Mandatory 15-day cure notice requirement.",
+   "Cause of action arises on 16th day following receipt of notice.",
+   "Reverse burden presumption under Section 139."
+  ],
+  "tags": [
+   "NI Act",
+   "Section 138",
+   "Cheque Dishonour",
+   "Criminal Liability",
+   "Statute"
+  ]
+ },
+ {
+  "key": "statute-arb-s11",
+  "title": "Arbitration and Conciliation Act, 1996 — Section 11",
+  "citation": "Section 11, Arbitration and Conciliation Act, 1996",
+  "alt_citations": [],
+  "court": "Parliament of India",
+  "bench": "Statutory Provision",
+  "decision_date": "1996",
+  "legal_status": "good_law",
+  "source_type": "statute",
+  "headnote": "Appointment of arbitrators: High Court or Supreme Court jurisdiction to appoint an arbitrator when parties fail to agree or the agreed appointment mechanism fails.",
+  "ratio": "Section 11(6A) confines judicial intervention at referral stage strictly to the examination of the existence of an arbitration agreement. Stamp sufficiency is left to tribunal.",
+  "propositions": [
+   "Section 11(6) appointment petition upon default.",
+   "Section 21 invocation notice is a condition precedent.",
+   "Prima facie standard of review."
+  ],
+  "tags": [
+   "Arbitration Act",
+   "Section 11",
+   "Appointment of Arbitrator",
+   "Statute"
+  ]
+ },
+ {
+  "key": "statute-comm-s12a",
+  "title": "Commercial Courts Act, 2015 — Section 12A",
+  "citation": "Section 12A, Commercial Courts Act, 2015",
+  "alt_citations": [],
+  "court": "Parliament of India",
+  "bench": "Statutory Provision",
+  "decision_date": "2015",
+  "legal_status": "good_law",
+  "source_type": "statute",
+  "headnote": "Pre-Institution Mediation and Settlement: A suit which does not contemplate any urgent interim relief shall not be instituted unless plaintiff exhausts mediation.",
+  "ratio": "Mandatory requirement. Period of 3 months in mediation is excluded from limitation calculation under Section 12A(3).",
+  "propositions": [
+   "Pre-institution mediation is mandatory in commercial suits without urgent interim relief."
+  ],
+  "tags": [
+   "Commercial Courts Act",
+   "Section 12A",
+   "Mediation",
+   "Statute"
+  ]
+ },
+ {
+  "key": "sc-babusigh-1978",
+  "title": "Babu Singh v. State of U.P.",
+  "citation": "(1978) 1 SCC 579",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Bench",
+  "decision_date": "1978",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Bail is rule, jail is exception. Deprivation of liberty must be justified by urgent necessity, risk of flight, or tampering with evidence.",
+  "ratio": "The significance of personal liberty under Article 21 demands that bail should ordinarily be granted unless there are strong reasons to believe the accused will flee justice or tamper with prosecution witnesses.",
+  "propositions": [
+   "Bail is rule, jail exception.",
+   "Personal liberty under Article 21."
+  ],
+  "tags": [
+   "Criminal Procedure",
+   "Bail",
+   "Article 21"
+  ]
+ },
+ {
+  "key": "sc-balchand-1977",
+  "title": "State of Rajasthan v. Balchand",
+  "citation": "AIR 1977 SC 2447",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Bench",
+  "decision_date": "1977",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Krishna Iyer J formulated the iconic doctrine: 'The basic rule may perhaps be tersely put as bail, not jail, except where there are circumstances suggestive of fleeing from justice'.",
+  "ratio": "The basic rule is bail, not jail, save in circumstances where flight or threat to justice is demonstrated by the prosecution.",
+  "propositions": [
+   "Bail not jail doctrine."
+  ],
+  "tags": [
+   "Criminal Procedure",
+   "Bail",
+   "Section 439"
+  ]
+ },
+ {
+  "key": "sc-bachansingh-1980",
+  "title": "Bachan Singh v. State of Punjab",
+  "citation": "(1980) 2 SCC 684",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "1980",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Upheld constitutional validity of death penalty under Section 302 IPC. Established the 'Rarest of Rare Cases' doctrine.",
+  "ratio": "Death sentence can be imposed only in the rarest of rare cases when the alternative option of life imprisonment is unquestionably foreclosed. Courts must balance aggravating and mitigating circumstances.",
+  "propositions": [
+   "Rarest of Rare doctrine.",
+   "Mandatory balancing of mitigating factors.",
+   "Life imprisonment is the rule, death sentence the exception."
+  ],
+  "tags": [
+   "Criminal Law",
+   "Death Penalty",
+   "Section 302 IPC",
+   "Rarest of Rare"
+  ]
+ },
+ {
+  "key": "sc-macchisingh-1983",
+  "title": "Machhi Singh v. State of Punjab",
+  "citation": "(1983) 3 SCC 470",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Bench",
+  "decision_date": "1983",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Codified 5 categories of rarest of rare cases for death sentence application pursuant to Bachan Singh.",
+  "ratio": "Laid down guidelines for measuring extreme brutality, anti-social nature of crime, magnitude of crime, and personality of victim.",
+  "propositions": [
+   "Five categories of rarest of rare crimes."
+  ],
+  "tags": [
+   "Criminal Law",
+   "Death Penalty",
+   "Sentencing"
+  ]
+ },
+ {
+  "key": "sc-nandini-1978",
+  "title": "Nandini Satpathy v. P.L. Dani",
+  "citation": "(1978) 2 SCC 424",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Bench",
+  "decision_date": "1978",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Right to silence under Article 20(3) and Section 161(2) CrPC: Accused and suspects have the right to remain silent during police interrogation if answers expose them to criminal charge.",
+  "ratio": "The ban against self-incrimination applies to witnesses and accused alike at stage of police investigation. Compulsion includes psychological pressure and torture.",
+  "propositions": [
+   "Right to silence extends to police interrogation.",
+   "Section 161(2) CrPC / Section 180 BNSS."
+  ],
+  "tags": [
+   "Criminal Procedure",
+   "Article 20(3)",
+   "Right to Silence",
+   "Self-Incrimination"
+  ]
+ },
+ {
+  "key": "sc-selvi-2010",
+  "title": "Selvi v. State of Karnataka",
+  "citation": "(2010) 7 SCC 263",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Bench",
+  "decision_date": "2010",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Involuntary administration of narco-analysis, polygraph / lie-detector tests, and Brain Electrical Activation Profiles (BEAP) violates Article 20(3) and Article 21.",
+  "ratio": "Involuntary psychological assessment techniques violate the right against self-incrimination (Art. 20(3)) and substantive due process / mental privacy (Art. 21). Information obtained involuntarily is inadmissible.",
+  "propositions": [
+   "Narco-analysis without consent unconstitutional.",
+   "Mental privacy protected under Article 21.",
+   "Admissibility limited strictly to subsequent discovery under Section 27 Evidence Act."
+  ],
+  "tags": [
+   "Evidence",
+   "Article 20(3)",
+   "Narco Analysis",
+   "Mental Privacy",
+   "Polygraph"
+  ]
+ },
+ {
+  "key": "sc-gujaratbottling-1995",
+  "title": "Gujarat Bottling Co. Ltd. v. Coca Cola Co.",
+  "citation": "(1995) 5 SCC 545",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Bench",
+  "decision_date": "1995",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Interim injunction under Order XXXIX CPC: The court must look at the conduct of the parties; he who comes to equity must come with clean hands.",
+  "ratio": "A litigant guilty of suppression of material facts or unfair conduct is disqualified from grant of discretionary equitable relief of temporary injunction.",
+  "propositions": [
+   "Clean hands doctrine in interim injunctions.",
+   "Negative covenant during subsistence of franchise valid."
+  ],
+  "tags": [
+   "Civil Procedure",
+   "CPC Order XXXIX",
+   "Injunction",
+   "Clean Hands",
+   "Franchise"
+  ]
+ },
+ {
+  "key": "sc-salemadvocate-2005",
+  "title": "Salem Advocate Bar Association v. Union of India",
+  "citation": "(2005) 6 SCC 344",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Bench",
+  "decision_date": "2005",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Upheld constitutional validity of 1999 and 2002 amendments to CPC, including Section 89 Alternative Dispute Resolution (ADR), model civil mediation rules, and case management.",
+  "ratio": "Section 89 CPC mandates reference of disputes to ADR (arbitration, conciliation, judicial settlement, mediation). Procedural rules are handmaids of justice.",
+  "propositions": [
+   "Section 89 CPC mandatory ADR reference upheld.",
+   "Model mediation rules formulated.",
+   "Procedural law cannot tyrannize substantive justice."
+  ],
+  "tags": [
+   "Civil Procedure",
+   "Section 89 CPC",
+   "Mediation",
+   "ADR",
+   "Case Management"
+  ]
+ },
+ {
+  "key": "sc-kailash-2005",
+  "title": "Kailash v. Nanhku",
+  "citation": "(2005) 4 SCC 480",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Bench",
+  "decision_date": "2005",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Order VIII Rule 1 CPC 90-day time limit for filing written statement in regular non-commercial civil suits is directory and not mandatory.",
+  "ratio": "In non-commercial civil suits, the court has discretionary power to accept a written statement beyond 90 days in rare and exceptional cases to prevent failure of justice.",
+  "propositions": [
+   "Order VIII Rule 1 directory in non-commercial suits.",
+   "Distinguished from Commercial Courts Act."
+  ],
+  "tags": [
+   "Civil Procedure",
+   "CPC Order VIII Rule 1",
+   "Written Statement",
+   "Limitation"
+  ]
+ },
+ {
+  "key": "sc-vineetasharma-2020",
+  "title": "Vineeta Sharma v. Rakesh Sharma",
+  "citation": "(2020) 9 SCC 1",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Bench",
+  "decision_date": "2020",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Hindu Succession (Amendment) Act, 2005: Daughters have equal coparcenary rights by birth in Hindu Undivided Family (HUF) property, regardless of whether the father was alive on 09.09.2005.",
+  "ratio": "The coparcenary rights of daughters under Section 6 are retroactive, conferred by birth. Father coparcener need not be living when amendment took effect on 9 September 2005. Overruled Prakash v. Phulavati.",
+  "propositions": [
+   "Daughters have equal coparcenary rights by birth under Section 6 HSA.",
+   "Living coparcener father requirement overruled.",
+   "Gender equality under Article 14 actualized in succession."
+  ],
+  "tags": [
+   "Hindu Law",
+   "Succession Act",
+   "Section 6",
+   "Coparcenary",
+   "Gender Equality"
+  ]
+ },
+ {
+  "key": "sc-shahbano-1985",
+  "title": "Mohd. Ahmed Khan v. Shah Bano Begum",
+  "citation": "(1985) 2 SCC 556",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "1985",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Section 125 CrPC is a secular provision applying to all citizens irrespective of religion. A divorced Muslim wife is entitled to maintenance from her former husband until she remarries.",
+  "ratio": "Section 125 CrPC overrides personal law where a divorced woman is unable to maintain herself. The husband's liability does not cease upon expiration of iddat if she is destitute.",
+  "propositions": [
+   "Section 125 CrPC is secular and universal.",
+   "Muslim divorced woman entitled to maintenance."
+  ],
+  "tags": [
+   "Family Law",
+   "Section 125 CrPC",
+   "Maintenance",
+   "Secularism"
+  ]
+ },
+ {
+  "key": "sc-daniallatifi-2001",
+  "title": "Danial Latifi v. Union of India",
+  "citation": "(2001) 7 SCC 740",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "2001",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Upheld the constitutional validity of the Muslim Women (Protection of Rights on Divorce) Act, 1986 by interpreting Section 3(1)(a) to mean that reasonable and fair provision for future livelihood must be made within the iddat period.",
+  "ratio": "A Muslim husband must provide a reasonable and fair provision and maintenance to his divorced wife within the iddat period, but that provision must extend to cover her entire future life until she remarries.",
+  "propositions": [
+   "Constitutional validity of 1986 Act upheld.",
+   "Maintenance must cover future life of divorced wife."
+  ],
+  "tags": [
+   "Family Law",
+   "Muslim Women Act",
+   "Maintenance",
+   "Article 14",
+   "Article 21"
+  ]
+ },
+ {
+  "key": "sc-rajneshneha-2021",
+  "title": "Rajnesh v. Neha",
+  "citation": "(2021) 2 SCC 324",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Bench",
+  "decision_date": "2020",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Pan-India binding guidelines to streamline payment of interim maintenance in matrimonial disputes across Section 125 CrPC, Domestic Violence Act, and Hindu Marriage Act.",
+  "ratio": "Mandatory filing of standardized Affidavit of Assets and Liabilities by both parties. Maintenance must be awarded from the date of filing of the application. Overlapping maintenance claims to be adjusted.",
+  "propositions": [
+   "Mandatory Affidavit of Assets and Liabilities.",
+   "Interim maintenance payable from date of application.",
+   "Enforcement through contempt and civil execution."
+  ],
+  "tags": [
+   "Family Law",
+   "Maintenance",
+   "Affidavit of Assets",
+   "Section 125",
+   "DV Act"
+  ]
+ },
+ {
+  "key": "sc-indira-sawhney-1992",
+  "title": "Indra Sawhney v. Union of India (Mandal Case)",
+  "citation": "(1992) Supp (3) SCC 217",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "9-Judge Constitution Bench",
+  "decision_date": "1992",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "9-Judge Constitution Bench upheld 27% reservation for Other Backward Classes (OBCs) under Article 16(4). Established the 50% ceiling and the Creamy Layer exclusion principle.",
+  "ratio": "Caste can be a starting point for identifying backward classes. Total vertical reservations under Article 16(4) cannot exceed 50%. The 'creamy layer' (socially and economically advanced members) must be excluded from affirmative action.",
+  "propositions": [
+   "50% ceiling on vertical reservation.",
+   "Creamy layer exclusion is mandatory.",
+   "Reservation not permitted in promotions under Article 16(4) (later amended via 77th Amendment)."
+  ],
+  "tags": [
+   "Constitutional Law",
+   "Article 16(4)",
+   "Reservation",
+   "Mandal Commission",
+   "Creamy Layer"
+  ]
+ },
+ {
+  "key": "sc-mcmehta-oleum-1987",
+  "title": "M.C. Mehta v. Union of India (Oleum Gas Leak)",
+  "citation": "(1987) 1 SCC 395",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "5-Judge Constitution Bench",
+  "decision_date": "1987",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Formulated the Absolute Liability doctrine for hazardous and inherently dangerous industrial enterprises, eliminating the exceptions in Rylands v. Fletcher.",
+  "ratio": "An enterprise engaged in hazardous or inherently dangerous industry owes an absolute and non-delegable duty to the community. If damage results, the enterprise is strictly liable to compensate without any exceptions.",
+  "propositions": [
+   "Absolute liability doctrine established in India.",
+   "Exceptions of Rylands v. Fletcher rejected.",
+   "Compensation quantified according to enterprise capacity and magnitude of hazard."
+  ],
+  "tags": [
+   "Environmental Law",
+   "Torts",
+   "Absolute Liability",
+   "Article 21",
+   "Hazardous Industry"
+  ]
+ },
+ {
+  "key": "sc-vellorecitizens-1996",
+  "title": "Vellore Citizens' Welfare Forum v. Union of India",
+  "citation": "(1996) 5 SCC 647",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "3-Judge Bench",
+  "decision_date": "1996",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Integrated the Precautionary Principle and the Polluter Pays Principle into Indian environmental jurisprudence under Article 21.",
+  "ratio": "Sustainable development requires that remediation costs be borne by the polluter. Lack of full scientific certainty shall not be used as a reason for postponing cost-effective measures to prevent environmental degradation.",
+  "propositions": [
+   "Precautionary principle and Polluter Pays principle are part of Article 21.",
+   "Onus of proof is on the actor or industry to show action is environmentally benign."
+  ],
+  "tags": [
+   "Environmental Law",
+   "Precautionary Principle",
+   "Polluter Pays",
+   "Article 21",
+   "Tanneries"
+  ]
+ },
+ {
+  "key": "sc-kamalnath-1997",
+  "title": "M.C. Mehta v. Kamal Nath",
+  "citation": "(1997) 1 SCC 388",
+  "alt_citations": [],
+  "court": "Supreme Court of India",
+  "bench": "2-Judge Bench",
+  "decision_date": "1997",
+  "legal_status": "good_law",
+  "source_type": "judgment",
+  "headnote": "Established the Public Trust Doctrine in Indian law: Natural resources (rivers, forests, seashores) are held by the State in trust for the public and cannot be privatized.",
+  "ratio": "The State is the trustee of all natural resources which are by nature meant for public use and enjoyment. The executive cannot convert public resources into private commercial ownership.",
+  "propositions": [
+   "Public Trust Doctrine integrated into Indian legal system.",
+   "Ecological restitution damages awarded against violator."
+  ],
+  "tags": [
+   "Environmental Law",
+   "Public Trust Doctrine",
+   "Beas River",
+   "Natural Resources"
+  ]
+ },
+ {
+  "key": "statute-cpc-s9",
+  "title": "Code of Civil Procedure, 1908 — Section 9",
+  "citation": "Section 9, Code of Civil Procedure, 1908",
+  "alt_citations": [],
+  "court": "Parliament of India",
+  "bench": "Statutory Provision",
+  "decision_date": "1908",
+  "legal_status": "good_law",
+  "source_type": "statute",
+  "headnote": "Courts to try all civil suits unless barred: Civil courts have plenary jurisdiction to try all suits of a civil nature excepting suits of which their cognizance is either expressly or impliedly barred.",
+  "ratio": "Every presumption is in favor of jurisdiction of a civil court. Exclusion of jurisdiction cannot be readily inferred and must be explicitly established.",
+  "propositions": [
+   "Plenary jurisdiction of civil courts.",
+   "Presumption against ouster of jurisdiction."
+  ],
+  "tags": [
+   "Civil Procedure",
+   "Section 9 CPC",
+   "Jurisdiction",
+   "Statute"
+  ]
+ },
+ {
+  "key": "statute-cpc-s11",
+  "title": "Code of Civil Procedure, 1908 — Section 11",
+  "citation": "Section 11, Code of Civil Procedure, 1908",
+  "alt_citations": [],
+  "court": "Parliament of India",
+  "bench": "Statutory Provision",
+  "decision_date": "1908",
+  "legal_status": "good_law",
+  "source_type": "statute",
+  "headnote": "Doctrine of Res Judicata: No Court shall try any suit or issue in which the matter directly and substantially in issue has been directly and substantially in issue in a former suit between the same parties.",
+  "ratio": "Finality of judicial decisions. Once a matter is heard and finally decided by a competent court, neither party can reopen it. Constructive res judicata under Explanation IV bars issues that might and ought to have been raised.",
+  "propositions": [
+   "Res Judicata bars re-litigation of decided issues.",
+   "Constructive Res Judicata under Explanation IV.",
+   "Applies to writ petitions and execution proceedings."
+  ],
+  "tags": [
+   "Civil Procedure",
+   "Section 11 CPC",
+   "Res Judicata",
+   "Finality",
+   "Statute"
+  ]
+ },
+ {
+  "key": "statute-cpc-o6r15a",
+  "title": "Code of Civil Procedure, 1908 — Order VI Rule 15A",
+  "citation": "Order VI Rule 15A, Code of Civil Procedure, 1908",
+  "alt_citations": [],
+  "court": "Parliament of India",
+  "bench": "Statutory Provision",
+  "decision_date": "2015",
+  "legal_status": "good_law",
+  "source_type": "statute",
+  "headnote": "Statement of Truth: In commercial disputes under Commercial Courts Act, every pleading must be verified by an Affidavit in the form of Statement of Truth. Pleading without Statement of Truth cannot be taken on record.",
+  "ratio": "Mandatory requirement. Unverified commercial pleadings are non-est until cured. False statement of truth attracts criminal contempt and perjury under Section 340 CrPC.",
+  "propositions": [
+   "Statement of Truth affidavit mandatory for commercial pleadings.",
+   "Order VI Rule 15A failure renders pleading non-est.",
+   "Direct perjury and criminal contempt exposure."
+  ],
+  "tags": [
+   "Commercial Courts Act",
+   "CPC Order VI Rule 15A",
+   "Statement of Truth",
+   "Affidavit",
+   "Statute"
+  ]
+ }
+]

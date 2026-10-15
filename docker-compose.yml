@@ -1,0 +1,37 @@
+# Self-hosted LawPilot with PostgreSQL + pgvector. Nothing here expires.
+#   1. copy .env.example to .env and set POSTGRES_PASSWORD (and an AI key, or add it later in the app)
+#   2. docker compose up -d
+#   3. open http://localhost:5000 and create the first (administrator) account
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: lawpilot
+      POSTGRES_USER: lawpilot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lawpilot -d lawpilot"]
+      interval: 5s
+      retries: 20
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://lawpilot:${POSTGRES_PASSWORD}@db:5432/lawpilot
+      LAWPILOT_DATA_DIR: /data
+    ports:
+      - "5000:5000"
+    volumes:
+      - appdata:/data          # uploaded matter documents and the server secret
+
+volumes:
+  pgdata:
+  appdata:
