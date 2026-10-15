@@ -83,6 +83,8 @@ class Config:
         cfg.serverless = bool(e("VERCEL"))
         default_dir = "/tmp/lawpilot" if cfg.serverless else str(BASE_DIR / "instance")
         cfg.data_dir = Path(e("LAWPILOT_DATA_DIR", default_dir))
+        if cfg.serverless and not str(cfg.data_dir).replace("\\", "/").startswith("/tmp"):
+            cfg.data_dir = Path(default_dir)        # only /tmp is writable on Vercel (e.g. an imported .env said ./instance)
         cfg.dev_mode = _bool("LAWPILOT_DEV", False)
         cfg.secure_cookies = _bool("LAWPILOT_SECURE_COOKIES", False)
         cfg.session_days = int(e("LAWPILOT_SESSION_DAYS", "14"))
