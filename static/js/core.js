@@ -189,3 +189,91 @@ async function loadMattersForSelect() {
     return r.matters.filter(m => m.my_access);
   } catch (e) { return []; }
 }
+
+/* ── Themes ────────────────────────────────────────────── */
+const THEMES = { parchment: "Parchment", midnight: "Midnight", chambers: "Chambers" };
+const THEME_ICONS = {
+  parchment: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  midnight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg>',
+  chambers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M7 21h10M5 7h14M12 5.5V7"/><path d="M5 7l-3 6a3 3 0 0 0 6 0z"/><path d="M19 7l-3 6a3 3 0 0 0 6 0z"/></svg>',
+};
+
+function normaliseTheme(t) {
+  if (t === "light") return "parchment";
+  if (t === "dark") return "midnight";
+  return THEMES[t] ? t : "system";
+}
+function storedTheme() { try { return localStorage.getItem("lp_theme"); } catch (e) { return null; } }
+function rememberTheme(t) { try { localStorage.setItem("lp_theme", t); } catch (e) { /* private mode */ } }
+function currentThemePref() {
+  const fromUser = State.user && State.user.prefs && State.user.prefs.theme;
+  return normaliseTheme(fromUser || storedTheme() || "system");
+}
+function effectiveTheme(pref) {
+  if (THEMES[pref]) return pref;
+  return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "midnight" : "parchment";
+}
+
+/* Apply the saved theme (or one passed in). "system" follows the device's light/dark setting. */
+function applyTheme(pref = currentThemePref(), animate = false) {
+  const html = document.documentElement;
+  if (animate) {
+    html.classList.add("theme-anim");
+    setTimeout(() => html.classList.remove("theme-anim"), 420);
+  }
+  if (THEMES[pref]) html.setAttribute("data-theme", pref); else html.removeAttribute("data-theme");
+  rememberTheme(pref);
+  syncThemeSwitches();
+}
+
+function themeSwitchHtml() {
+  return `<div class="theme-switch" role="radiogroup" aria-label="Colour theme"><span class="ts-thumb" aria-hidden="true"></span>
+    ${Object.entries(THEMES).map(([k, label]) => `<button type="button" role="radio" aria-checked="false" data-theme-opt="${k}"
+      title="${label} theme" aria-label="${label} theme" tabindex="-1">${THEME_ICONS[k]}</button>`).join("")}</div>`;
+}
+
+function syncThemeSwitches() {
+  const eff = effectiveTheme(currentThemePref());
+  const keys = Object.keys(THEMES);
+  $$(".theme-switch").forEach(sw => {
+    sw.style.setProperty("--i", keys.indexOf(eff));
+    $$("button", sw).forEach(b => {
+      const on = b.dataset.themeOpt === eff;
+      b.setAttribute("aria-checked", String(on));
+      b.tabIndex = on ? 0 : -1;
+    });
+  });
+  $$(".ts-label").forEach(l => { l.textContent = THEMES[eff]; });
+}
+
+function setTheme(theme) {
+  if (!THEMES[theme] || theme === currentThemePref()) return applyTheme(theme);
+  if (State.user) {
+    State.user.prefs = { ...(State.user.prefs || {}), theme };
+    api("PATCH", "/api/account/profile", { prefs: { theme } }).catch(() => { /* kept locally anyway */ });
+  }
+  applyTheme(theme, true);
+}
+
+function wireThemeSwitches(root = document) {
+  $$(".theme-switch", root).forEach(sw => {
+    if (sw.dataset.wired) return;
+    sw.dataset.wired = "1";
+    $$("button", sw).forEach(b => b.addEventListener("click", () => setTheme(b.dataset.themeOpt)));
+    sw.addEventListener("keydown", e => {        // arrow keys move between the three options
+      const keys = Object.keys(THEMES);
+      const i = keys.indexOf(effectiveTheme(currentThemePref()));
+      let next = null;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") next = keys[(i + 1) % keys.length];
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = keys[(i + keys.length - 1) % keys.length];
+      if (next) { e.preventDefault(); setTheme(next); $(`[data-theme-opt="${next}"]`, sw).focus(); }
+    });
+  });
+  syncThemeSwitches();
+}
+
+if (window.matchMedia) {
+  const mq = matchMedia("(prefers-color-scheme: dark)");
+  const onChange = () => { if (currentThemePref() === "system") syncThemeSwitches(); };
+  if (mq.addEventListener) mq.addEventListener("change", onChange); else if (mq.addListener) mq.addListener(onChange);
+}

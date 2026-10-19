@@ -2,9 +2,11 @@
 "use strict";
 
 function authLayout(inner) {
-  document.body.innerHTML = `<div class="auth-wrap"><div class="card auth-card">
+  document.body.innerHTML = `<div class="auth-theme"><span class="ts-label"></span>${themeSwitchHtml()}</div>
+    <div class="auth-wrap"><div class="card auth-card">
     <div class="brand"><div class="brand-mark">L</div><div><div class="brand-name">LawPilot</div>
     <div class="brand-sub">Legal research &amp; practice management</div></div></div>${inner}</div></div>`;
+  wireThemeSwitches();
 }
 
 Pages.login = function (query) {
