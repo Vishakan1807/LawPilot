@@ -45,8 +45,6 @@ function renderShell() {
   if ($("#main")) return;
   const u = State.user;
   document.body.innerHTML = `
-    <div class="topbar"><button class="btn small" id="menu" aria-label="Menu">☰</button><strong>LawPilot</strong>
-      <span class="spacer"></span>${themeSwitchHtml()}</div>
     <div class="shell">
       <aside class="sidebar" id="sidebar">
         <div class="brand"><div class="brand-mark">L</div><div><div class="brand-name">LawPilot</div>
@@ -54,12 +52,19 @@ function renderShell() {
         <nav class="nav">${(u.is_platform_admin ? ADMIN_NAV : NAV).map(n => n.section
           ? `<div class="nav-section">${esc(n.section)}</div>`
           : `<a href="${n.href}" data-nav="${n.href}"><span class="ico">${n.ico}</span>${esc(n.label)}</a>`).join("")}</nav>
-        <div class="sidebar-foot"><div class="ts-row">${themeSwitchHtml()}<span class="ts-label"></span></div>
-          <div><strong>${esc(u.name)}</strong></div>
+        <div class="sidebar-foot"><div><strong>${esc(u.name)}</strong></div>
           <div class="muted">${u.is_platform_admin ? "Platform administrator" : u.firm ? esc(u.firm.name) + " · " + esc(u.firm.role_label) : "Individual practice"}</div>
           <button class="btn link" id="logout" style="margin-top:6px">Sign out</button></div>
       </aside>
-      <main class="main" id="main"></main>
+      <div class="content">
+        <header class="appbar">
+          <button class="btn small menu-btn" id="menu" aria-label="Open menu">☰</button>
+          <strong class="appbar-brand">LawPilot</strong>
+          <span class="spacer"></span>
+          <span class="ts-label"></span>${themeSwitchHtml()}
+        </header>
+        <main class="main" id="main"></main>
+      </div>
     </div>`;
   $("#logout").addEventListener("click", async () => {
     try { await api("POST", "/api/auth/logout"); } catch (e) { /* signing out anyway */ }
