@@ -191,16 +191,17 @@ async function loadMattersForSelect() {
 }
 
 /* ── Themes ────────────────────────────────────────────── */
-const THEMES = { parchment: "Parchment", midnight: "Midnight", chambers: "Chambers" };
+const THEMES = { brief: "Brief", blackcoat: "Black Coat", courtroom: "Courtroom" };
 const THEME_ICONS = {
-  parchment: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
-  midnight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg>',
-  chambers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M7 21h10M5 7h14M12 5.5V7"/><path d="M5 7l-3 6a3 3 0 0 0 6 0z"/><path d="M19 7l-3 6a3 3 0 0 0 6 0z"/></svg>',
+  brief: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M3.5 13h17"/><path d="M12 13l-2 4M12 13l2 4"/></svg>',
+  blackcoat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l8 4.5L20 4"/><rect x="7.5" y="9" width="4" height="11" rx="1"/><rect x="12.5" y="9" width="4" height="11" rx="1"/></svg>',
+  courtroom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 7.5l4-4 6 6-4 4z"/><path d="M13 5l6 6"/><path d="M12.5 11.5L4 20"/><path d="M13 21h8"/></svg>',
 };
+// Earlier names, kept so saved preferences carry over.
+const LEGACY_THEMES = { light: "brief", parchment: "brief", dark: "blackcoat", midnight: "blackcoat", chambers: "courtroom" };
 
 function normaliseTheme(t) {
-  if (t === "light") return "parchment";
-  if (t === "dark") return "midnight";
+  if (LEGACY_THEMES[t]) return LEGACY_THEMES[t];
   return THEMES[t] ? t : "system";
 }
 function storedTheme() { try { return localStorage.getItem("lp_theme"); } catch (e) { return null; } }
@@ -211,7 +212,7 @@ function currentThemePref() {
 }
 function effectiveTheme(pref) {
   if (THEMES[pref]) return pref;
-  return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "midnight" : "parchment";
+  return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "blackcoat" : "brief";
 }
 
 /* Apply the saved theme (or one passed in). "system" follows the device's light/dark setting. */

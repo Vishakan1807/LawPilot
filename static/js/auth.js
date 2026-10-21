@@ -3,9 +3,11 @@
 
 function authLayout(inner) {
   document.body.innerHTML = `<div class="auth-theme"><span class="ts-label"></span>${themeSwitchHtml()}</div>
-    <div class="auth-wrap"><div class="card auth-card">
+    <div class="auth-wrap"><div class="auth-stack"><div class="card auth-card">
     <div class="brand"><div class="brand-mark">L</div><div><div class="brand-name">LawPilot</div>
-    <div class="brand-sub">Legal research &amp; practice management</div></div></div>${inner}</div></div>`;
+    <div class="brand-sub">Legal research &amp; practice management</div></div></div>${inner}</div>
+    <div class="auth-motto" lang="sa"><strong>सत्यमेव जयते</strong><span lang="en">Satyameva Jayate · Truth alone triumphs</span></div>
+    </div></div>`;
   wireThemeSwitches();
 }
 

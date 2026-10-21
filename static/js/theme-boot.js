@@ -2,9 +2,9 @@
 (function () {
   try {
     var t = localStorage.getItem("lp_theme");
-    if (t === "light") t = "parchment";
-    if (t === "dark") t = "midnight";
-    if (t === "parchment" || t === "midnight" || t === "chambers") {
+    var legacy = { light: "brief", parchment: "brief", dark: "blackcoat", midnight: "blackcoat", chambers: "courtroom" };
+    if (legacy[t]) t = legacy[t];
+    if (t === "brief" || t === "blackcoat" || t === "courtroom") {
       document.documentElement.setAttribute("data-theme", t);
     }
   } catch (e) { /* storage blocked: follow the device setting */ }

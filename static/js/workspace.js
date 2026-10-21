@@ -187,9 +187,10 @@ Pages.settings = async function (query) {
       <label class="check"><input type="checkbox" name="exclude_overruled" data-bool ${p.exclude_overruled ? "checked" : ""}> Hide overruled / repealed material by default</label>
       <label class="check"><input type="checkbox" name="notify_hearings" data-bool ${p.notify_hearings ? "checked" : ""}> Email me hearing reminders the day before</label>
       <label class="check"><input type="checkbox" name="notify_tasks" data-bool ${p.notify_tasks ? "checked" : ""}> Email me when a task is assigned to me</label>
-      <div class="field" style="margin-top:10px"><label>Theme</label><select name="theme">${options({ system: "Follow my device (Parchment or Midnight)", parchment: "Parchment: warm ivory, navy and gold",
-        midnight: "Midnight: deep navy, steel blue", chambers: "Chambers: law-library green and brass" }, normaliseTheme(p.theme))}</select>
-        <div class="hint">You can also switch instantly with the three-way switch in the sidebar.</div></div>
+      <div class="field" style="margin-top:10px"><label>Theme</label><select name="theme">${options({ system: "Follow my device (Brief or Black Coat)", brief: "Brief: ivory brief paper, ink and red tape",
+        blackcoat: "Black Coat: the advocate's black coat and white bands",
+        courtroom: "Courtroom: mahogany bench, oxblood leather and brass" }, normaliseTheme(p.theme))}</select>
+        <div class="hint">You can also switch instantly with the three-way switch at the top of the page.</div></div>
       ${State.status && !State.status.email_configured ? `<div class="banner warn">Email is not configured on this server, so notifications cannot be sent yet.</div>` : ""}
       <button class="btn primary">Save preferences</button></form></div>`;
     $("#prf").addEventListener("submit", e => {

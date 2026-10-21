@@ -1,28 +1,31 @@
 /* ── Themes ───────────────────────────────────────────────
-   Parchment (light)  · Midnight (dark)  · Chambers (green & brass)
-   No data-theme attribute = follow the device: Parchment or Midnight. */
-:root, :root[data-theme="parchment"] {
-  --bg: #f5f2ea;
-  --surface: #fffdf8;
-  --surface-2: #efeadf;
-  --border: #e0d9c9;
-  --text: #1c2230;
-  --muted: #646a74;
-  --accent: #1f3f66;
-  --accent-ink: #ffffff;
-  --accent-soft: #e3eaf3;
-  --gold: #9a6b16;
+   Brief       (light) · ivory brief paper, iron-gall ink, red tape
+   Black Coat  (dark)  · the advocate's black coat and white bands
+   Courtroom   (warm)  · mahogany bench, oxblood leather, brass
+   No data-theme attribute = follow the device: Brief or Black Coat. */
+:root, :root[data-theme="brief"] {
+  --bg: #f3ede0;
+  --surface: #fffcf5;
+  --surface-2: #ece4d2;
+  --border: #dccfb6;
+  --text: #1e1b16;
+  --muted: #675f52;
+  --accent: #8e1c1c;
+  --accent-ink: #fffaf0;
+  --accent-soft: #f4e2dc;
+  --gold: #8a6416;
   --ok: #1e6b3f;
   --ok-soft: #e1f1e6;
   --warn: #8a5a00;
   --warn-soft: #f9eed6;
   --bad: #a3261d;
   --bad-soft: #f8e1de;
-  --info-soft: #e7edf5;
-  --shadow: 0 1px 2px rgba(40, 32, 16, .06), 0 2px 10px rgba(40, 32, 16, .05);
-  --switch-bg: #e9e3d5;
-  --switch-thumb: #fffdf8;
-  --switch-glow: rgba(154, 107, 22, .35);
+  --info-soft: #ece6da;
+  --shadow: 0 1px 2px rgba(60, 40, 16, .07), 0 3px 12px rgba(60, 40, 16, .06);
+  --switch-bg: #e8dfcb;
+  --switch-thumb: #fffcf5;
+  --switch-glow: rgba(142, 28, 28, .3);
+  --watermark: rgba(142, 28, 28, .07);
   color-scheme: light;
 }
 :root {
@@ -33,28 +36,32 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    --bg: #12161d; --surface: #1a1f28; --surface-2: #222833; --border: #2e3644; --text: #e6e9ee;
-    --muted: #9aa2af; --accent: #82b2e4; --accent-ink: #0c1420; --accent-soft: #1e2c3d; --gold: #d9a54a;
-    --ok: #6fcf97; --ok-soft: #1a3226; --warn: #e5b85c; --warn-soft: #352b16; --bad: #ef8a80; --bad-soft: #3a1f1d;
-    --info-soft: #1e2938; --shadow: none;
-    --switch-bg: #0e1218; --switch-thumb: #2a3240; --switch-glow: rgba(130, 178, 228, .35);
+    --bg: #0c0c0e; --surface: #151518; --surface-2: #1e1e22; --border: #2d2d33; --text: #f2efe8;
+    --muted: #9e9a91; --accent: #f3efe6; --accent-ink: #0c0c0e; --accent-soft: #26262b; --gold: #cdb27a;
+    --ok: #74d39c; --ok-soft: #16291f; --warn: #e5bd66; --warn-soft: #2e2716; --bad: #f08a80; --bad-soft: #351c1a;
+    --info-soft: #1d1d22; --shadow: none;
+    --switch-bg: #050506; --switch-thumb: #2a2a30; --switch-glow: rgba(243, 239, 230, .28);
+    --watermark: rgba(243, 239, 230, .045);
     color-scheme: dark;
   }
 }
-:root[data-theme="midnight"] {
-  --bg: #12161d; --surface: #1a1f28; --surface-2: #222833; --border: #2e3644; --text: #e6e9ee;
-  --muted: #9aa2af; --accent: #82b2e4; --accent-ink: #0c1420; --accent-soft: #1e2c3d; --gold: #d9a54a;
-  --ok: #6fcf97; --ok-soft: #1a3226; --warn: #e5b85c; --warn-soft: #352b16; --bad: #ef8a80; --bad-soft: #3a1f1d;
-  --info-soft: #1e2938; --shadow: none;
-  --switch-bg: #0e1218; --switch-thumb: #2a3240; --switch-glow: rgba(130, 178, 228, .35);
+:root[data-theme="blackcoat"] {
+  --bg: #0c0c0e; --surface: #151518; --surface-2: #1e1e22; --border: #2d2d33; --text: #f2efe8;
+  --muted: #9e9a91; --accent: #f3efe6; --accent-ink: #0c0c0e; --accent-soft: #26262b; --gold: #cdb27a;
+  --ok: #74d39c; --ok-soft: #16291f; --warn: #e5bd66; --warn-soft: #2e2716; --bad: #f08a80; --bad-soft: #351c1a;
+  --info-soft: #1d1d22; --shadow: none;
+  --switch-bg: #050506; --switch-thumb: #2a2a30; --switch-glow: rgba(243, 239, 230, .28);
+  --watermark: rgba(243, 239, 230, .045);
   color-scheme: dark;
 }
-:root[data-theme="chambers"] {
-  --bg: #0f1f1a; --surface: #152a23; --surface-2: #1b342c; --border: #284a3f; --text: #efe9db;
-  --muted: #a8b4a6; --accent: #cfa85a; --accent-ink: #1b1407; --accent-soft: #2b3a29; --gold: #e0bd72;
-  --ok: #7fd3a0; --ok-soft: #173327; --warn: #e8c06a; --warn-soft: #3a311a; --bad: #f09186; --bad-soft: #3b211e;
-  --info-soft: #1d3530; --shadow: 0 1px 2px rgba(0, 0, 0, .25), 0 4px 14px rgba(0, 0, 0, .2);
-  --switch-bg: #0a1713; --switch-thumb: #24443a; --switch-glow: rgba(207, 168, 90, .4);
+:root[data-theme="courtroom"] {
+  --bg: #1b100c; --surface: #26170f; --surface-2: #321e15; --border: #4b2f21; --text: #f4e7d1;
+  --muted: #bda98d; --accent: #d9a748; --accent-ink: #1b100c; --accent-soft: #3c2815; --gold: #e8c47a;
+  --ok: #8fd4a4; --ok-soft: #1c2a1c; --warn: #ecc46c; --warn-soft: #3a2c16; --bad: #f2948a; --bad-soft: #3d1c19;
+  --info-soft: #2d1c14; --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 6px 18px rgba(0, 0, 0, .28);
+  --switch-bg: #120a07; --switch-thumb: #4a2a1c; --switch-glow: rgba(217, 167, 72, .45);
+  --watermark: rgba(217, 167, 72, .07);
+  --leather: #3a1513;
   color-scheme: dark;
 }
 /* Smooth colour change only while switching themes (added and removed by JavaScript). */
@@ -65,7 +72,7 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body { background: var(--bg); color: var(--text); font: 15px/1.55 var(--sans); }
-a { color: var(--accent); text-decoration: none; }
+a { color: var(--link, var(--accent)); text-decoration: none; }
 a:hover { text-decoration: underline; }
 h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; margin: 0 0 .5em; }
 h1 { font-size: 1.6rem; }
@@ -522,3 +529,82 @@ body.ai-mode .main { padding: 0; max-width: none; height: calc(100vh - 57px); he
   .ai-msg, .ai-welcome { animation: none; }
   .ai-dots i { animation: none; }
 }
+
+/* ── Theme character ────────────────────────────────────────
+   Small, quiet details that make each theme feel like a lawyer's world. */
+
+/* Brief: ruled brief paper with the red double margin of a legal pad, tied with red tape. */
+:root[data-theme="brief"] body, :root:not([data-theme]) body {
+  background-image: repeating-linear-gradient(to bottom, transparent 0 31px, rgba(30, 60, 110, .045) 31px 32px);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) body { background-image: none; } }
+:root[data-theme="brief"] .sidebar {
+  border-right: 0;
+  background-image: linear-gradient(to left, rgba(142, 28, 28, .45) 0 1px, transparent 1px 4px,
+    rgba(142, 28, 28, .45) 4px 5px, transparent 5px);
+}
+:root[data-theme="brief"] .brand-mark { box-shadow: inset 0 -5px 0 rgba(0, 0, 0, .18); }
+:root[data-theme="brief"] .card { border-top: 2px solid var(--accent); }
+:root[data-theme="brief"] .modal .card, :root[data-theme="brief"] .ai-root .card { border-top-width: 1px; }
+
+/* Black Coat: a fine pinstripe, white bands, and brass for links. */
+:root[data-theme="blackcoat"] { --link: #d4b97f; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) { --link: #d4b97f; } }
+:root[data-theme="blackcoat"] body {
+  background-image: repeating-linear-gradient(90deg, transparent 0 23px, rgba(255, 255, 255, .022) 23px 24px);
+}
+:root[data-theme="blackcoat"] .nav a.active { box-shadow: inset 3px 0 0 var(--accent); }
+:root[data-theme="blackcoat"] .brand-mark { position: relative; }
+:root[data-theme="blackcoat"] .brand-mark::after {      /* the two white bands under the collar */
+  content: ""; position: absolute; left: 50%; bottom: -7px; width: 10px; height: 9px; transform: translateX(-50%);
+  background: linear-gradient(90deg, var(--accent) 0 4px, transparent 4px 6px, var(--accent) 6px);
+  border-radius: 0 0 2px 2px;
+}
+:root[data-theme="blackcoat"] .btn.primary { box-shadow: 0 0 0 1px rgba(255, 255, 255, .15), 0 4px 14px rgba(0, 0, 0, .5); }
+
+/* Courtroom: mahogany panelling, an oxblood leather sidebar with gold tooling, brass fittings. */
+:root[data-theme="courtroom"] body {
+  background-image:
+    repeating-linear-gradient(97deg, rgba(0, 0, 0, .10) 0 2px, transparent 2px 7px, rgba(255, 200, 150, .025) 7px 8px, transparent 8px 15px),
+    linear-gradient(180deg, #22140e, #1b100c 40%, #170d0a);
+  background-attachment: fixed;
+}
+:root[data-theme="courtroom"] .sidebar {
+  background-color: var(--leather);
+  background-image: radial-gradient(ellipse at 30% 0%, rgba(255, 210, 160, .08), transparent 60%),
+    radial-gradient(rgba(0, 0, 0, .18) 1px, transparent 1.2px);
+  background-size: auto, 5px 5px;
+  border-right: 0;
+  box-shadow: inset -1px 0 0 rgba(232, 196, 122, .55), inset -5px 0 0 #24100d, inset -6px 0 0 rgba(232, 196, 122, .3);
+}
+:root[data-theme="courtroom"] .sidebar .nav a.active { background: rgba(217, 167, 72, .18); color: var(--gold); }
+:root[data-theme="courtroom"] .sidebar .nav a:hover { background: rgba(255, 220, 180, .07); }
+:root[data-theme="courtroom"] .sidebar-foot { border-top-color: rgba(232, 196, 122, .3); }
+:root[data-theme="courtroom"] .brand-mark { background: linear-gradient(145deg, #f0cf86, #b9852f); color: #2a160b;
+  box-shadow: 0 0 0 1px rgba(255, 230, 170, .4), 0 2px 8px rgba(0, 0, 0, .4); }
+:root[data-theme="courtroom"] .brand-name { color: var(--gold); letter-spacing: .02em; }
+:root[data-theme="courtroom"] .card { background-image: linear-gradient(180deg, rgba(255, 220, 180, .03), transparent 40%); }
+:root[data-theme="courtroom"] .btn.primary { background: linear-gradient(180deg, #e8bb5e, #c18f33); border-color: #a87726;
+  color: #24130a; box-shadow: inset 0 1px 0 rgba(255, 240, 200, .5), 0 2px 8px rgba(0, 0, 0, .35); }
+:root[data-theme="courtroom"] .appbar { background: rgba(27, 16, 12, .86); border-bottom-color: rgba(232, 196, 122, .22); }
+
+/* ── Sign-in: the court's emblem and motto ─────────────────── */
+.auth-wrap { position: relative; isolation: isolate; }
+.auth-wrap::before {          /* a large, faint scales of justice behind the card */
+  content: ""; position: fixed; z-index: -1; left: 50%; top: 50%; width: min(720px, 92vw); aspect-ratio: 1;
+  transform: translate(-50%, -52%); background: var(--watermark); pointer-events: none;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M32 6v50M20 58h24M24 56h16M10 16h44M32 10a2.5 2.5 0 1 0 0 .1'/%3E%3Cpath d='M14 16L5 34h18zM50 16l-9 18h18z'/%3E%3Cpath d='M5 34a9 5 0 0 0 18 0M41 34a9 5 0 0 0 18 0'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M32 6v50M20 58h24M24 56h16M10 16h44M32 10a2.5 2.5 0 1 0 0 .1'/%3E%3Cpath d='M14 16L5 34h18zM50 16l-9 18h18z'/%3E%3Cpath d='M5 34a9 5 0 0 0 18 0M41 34a9 5 0 0 0 18 0'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.auth-stack { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.auth-motto { text-align: center; color: var(--muted); font-family: var(--serif); line-height: 1.4; }
+.auth-motto strong { display: block; color: var(--gold); font-size: 1.15rem; font-weight: 600; letter-spacing: .04em; }
+.auth-motto span { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
+.auth-card { position: relative; }
+:root[data-theme="brief"] .auth-card, :root:not([data-theme]) .auth-card { border-top: 4px solid var(--accent); }
+:root[data-theme="courtroom"] .auth-card { border: 1px solid rgba(232, 196, 122, .45);
+  box-shadow: 0 0 0 4px var(--surface), 0 0 0 5px rgba(232, 196, 122, .3), 0 18px 50px rgba(0, 0, 0, .5); }
+:root[data-theme="blackcoat"] .auth-card { box-shadow: 0 0 0 1px rgba(255, 255, 255, .06), 0 24px 60px rgba(0, 0, 0, .6); }
+
+/* Links inside banners are underlined so they stand out from the banner text in every theme. */
+.banner a { text-decoration: underline; text-underline-offset: 2px; }
