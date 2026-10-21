@@ -299,6 +299,7 @@ input[type=password]::-ms-reveal, input[type=password]::-ms-clear { display: non
 .nav a.nav-ai { position: relative; margin: 2px 0 6px; background: linear-gradient(120deg,
   color-mix(in srgb, var(--accent) 14%, transparent), color-mix(in srgb, var(--gold) 14%, transparent)); }
 .nav a.nav-ai .ico { color: var(--gold); opacity: 1; font-size: 1.05rem; }
+.nav a.nav-ai .ico svg { width: 17px; height: 17px; display: block; margin: 0 auto; }
 .nav a.nav-ai.active { background: linear-gradient(120deg, color-mix(in srgb, var(--accent) 26%, transparent),
   color-mix(in srgb, var(--gold) 22%, transparent)); color: var(--text); }
 .nav-new { margin-left: auto; font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;

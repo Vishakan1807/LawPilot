@@ -15,7 +15,7 @@ const AI_ICONS = {
   dots: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
   doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>',
   scale: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M7 21h10M5 7h14"/><path d="M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></svg>',
-  spark: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9zM19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg>',
+  bands: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.8 4.2L12 8.9l9.2-4.7-1.5 3.9L12 12 4.3 8.1z"/><path d="M8.9 11.6h2.5v8.8c0 .5-.4.9-.9.9H8c-.6 0-1-.5-.9-1z"/><path d="M12.6 11.6h2.5l1.8 8.7c.1.5-.3 1-.9 1h-2.5c-.5 0-.9-.4-.9-.9z"/></svg>',  // the advocate's collar bands
   side: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>',
   x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
 };
@@ -387,7 +387,7 @@ function renderConversation() {
   const thread = $("#ai-thread");
   if (!AI.messages.length) {
     thread.innerHTML = `<div class="ai-welcome">
-      <div class="ai-orb">${AI_ICONS.spark}</div>
+      <div class="ai-orb">${AI_ICONS.bands}</div>
       <h1>${greeting()}</h1>
       <p class="muted">Ask about Indian law, or attach judgments, contracts and pleadings to summarise, compare and question them.
         Answers cite your files and LawPilot's library.</p>
@@ -421,7 +421,7 @@ function messageHtml(m, isLast) {
   }
   const notes = (extra.notes || []).map(n => `<div class="ai-note">${esc(n)}</div>`).join("");
   return `<div class="ai-msg assistant ${extra.error ? "error" : ""}" data-msg="${esc(m.id)}">
-    <div class="ai-avatar">${AI_ICONS.spark}</div>
+    <div class="ai-avatar">${AI_ICONS.bands}</div>
     <div class="ai-body">
       ${extra.mode === "summary" ? `<div class="ai-mode-tag">Document summary</div>` : ""}
       <div class="ai-md">${renderMarkdown(m.content)}</div>
@@ -492,7 +492,7 @@ function scrollAiToEnd() {
 }
 
 function typingHtml(text) {
-  return `<div class="ai-msg assistant typing" id="ai-typing"><div class="ai-avatar">${AI_ICONS.spark}</div>
+  return `<div class="ai-msg assistant typing" id="ai-typing"><div class="ai-avatar">${AI_ICONS.bands}</div>
     <div class="ai-body"><div class="ai-dots"><i></i><i></i><i></i></div><span class="ai-typing-text">${esc(text)}</span></div></div>`;
 }
 

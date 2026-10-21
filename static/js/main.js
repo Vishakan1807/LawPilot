@@ -1,9 +1,12 @@
 /* App shell and router. */
 "use strict";
 
+// The advocate's collar bands: the mark of LawPilot AI.
+const ADVOCATE_BANDS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.8 4.2L12 8.9l9.2-4.7-1.5 3.9L12 12 4.3 8.1z"/><path d="M8.9 11.6h2.5v8.8c0 .5-.4.9-.9.9H8c-.6 0-1-.5-.9-1z"/><path d="M12.6 11.6h2.5l1.8 8.7c.1.5-.3 1-.9 1h-2.5c-.5 0-.9-.4-.9-.9z"/></svg>';
+
 const NAV = [
   { href: "#/home", label: "Home", ico: "⌂" },
-  { href: "#/ai", label: "AI mode", ico: "✧", special: true },
+  { href: "#/ai", label: "AI mode", ico: ADVOCATE_BANDS, special: true },
   { href: "#/matters", label: "Matters", ico: "▤" },
   { href: "#/research", label: "Research", ico: "⌕" },
   { href: "#/library", label: "Library", ico: "❏" },
@@ -18,7 +21,7 @@ const NAV = [
 // Platform administrators run the server; they get an operator menu and no practice features.
 const ADMIN_NAV = [
   { href: "#/home", label: "Overview", ico: "⌂" },
-  { href: "#/ai", label: "AI mode", ico: "✧", special: true },
+  { href: "#/ai", label: "AI mode", ico: ADVOCATE_BANDS, special: true },
   { section: "Legal library" },
   { href: "#/admin", label: "Manage library", ico: "★" },
   { href: "#/admin?tab=import", label: "Import judgments", ico: "⇩" },
