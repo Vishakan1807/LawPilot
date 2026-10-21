@@ -112,16 +112,22 @@ class RetrievalResult:
 
 # ── Scope ──────────────────────────────────────────────────────────────────
 
-def scope_sql(filters: Filters, matter_id: Optional[str]) -> Tuple[str, list]:
-    """WHERE clause over `sources s`. `matter_id` must already be authorised by the caller."""
+def scope_sql(filters: Filters, matter_id: Optional[str], chat_id: Optional[str] = None) -> Tuple[str, list]:
+    """WHERE clause over `sources s`. `matter_id` / `chat_id` must already be authorised by the caller.
+
+    The public library is `matter_id IS NULL AND chat_id IS NULL`; files uploaded into an AI-mode
+    chat are visible only when that chat is the scope."""
     clauses = ["s.is_active = 1", "s.status = 'ready'"]
     params: list = []
     scope = []
     if filters.include_corpus:
-        scope.append("s.matter_id IS NULL")
+        scope.append("(s.matter_id IS NULL AND s.chat_id IS NULL)")
     if matter_id and filters.include_matter_docs:
         scope.append("s.matter_id = ?")
         params.append(matter_id)
+    if chat_id:
+        scope.append("s.chat_id = ?")
+        params.append(chat_id)
     if not scope:
         return "0", []
     clauses.append("(" + " OR ".join(scope) + ")")
@@ -157,7 +163,7 @@ def scope_sql(filters: Filters, matter_id: Optional[str]) -> Tuple[str, list]:
     if filters.exclude_overruled:
         corpus_only.append("s.legal_status NOT IN ('overruled', 'repealed')")
     if corpus_only:
-        clauses.append("(s.matter_id IS NOT NULL OR (" + " AND ".join(corpus_only) + "))")
+        clauses.append("(s.matter_id IS NOT NULL OR s.chat_id IS NOT NULL OR (" + " AND ".join(corpus_only) + "))")
     return " AND ".join(clauses), params
 
 
@@ -419,7 +425,8 @@ def _load_candidates(db, chunk_ids: Sequence[str]) -> Dict[str, Candidate]:
             d = dict(r)
             src = {k: d[k] for k in ("title", "kind", "authority_class", "citation", "neutral_citation", "court",
                                      "court_level", "bench", "decision_date", "jurisdiction", "act_name",
-                                     "legal_status", "status_note", "verification", "source_url", "matter_id",
+                                     "legal_status", "status_note", "verification", "source_url", "matter_id", "chat_id",
+                                     "original_filename",
                                      "origin", "retrieved_at", "verified_at", "parties", "case_number",
                                      "security_flags", "alt_citations")}
             out[d["id"]] = Candidate(chunk_id=d["id"], source_id=d["source_id"], version=d["version"],
@@ -429,8 +436,9 @@ def _load_candidates(db, chunk_ids: Sequence[str]) -> Dict[str, Candidate]:
 
 
 def retrieve(db, cfg, analysis: QueryAnalysis, filters: Filters, matter_id: Optional[str] = None,
-             top_k: int = 8, extra_query: str = "") -> RetrievalResult:
-    where, params = scope_sql(filters, matter_id)
+             top_k: int = 8, extra_query: str = "", chat_id: Optional[str] = None,
+             per_source: int = 2) -> RetrievalResult:
+    where, params = scope_sql(filters, matter_id, chat_id)
     errors: List[str] = []
     query_text = analysis.query + (" " + extra_query if extra_query else "")
 
@@ -493,7 +501,7 @@ def retrieve(db, cfg, analysis: QueryAnalysis, filters: Filters, matter_id: Opti
     if analysis.search_type == "citation" and any(c.exact for c in ranked):
         # A citation lookup that resolved: other hits only matched on "SCC" / the year.
         ranked = [c for c in ranked if c.exact]
-    final = reranking.diversify(ranked, top_k)
+    final = reranking.diversify(ranked, top_k, per_source)
     contrary = find_contrary(db, analysis, final, where, params, exclude={c.chunk_id for c in final})
 
     stats = {

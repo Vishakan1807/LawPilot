@@ -72,6 +72,9 @@ def export_data():
             "JOIN source_versions v ON v.source_id = s.id AND v.version = s.current_version WHERE s.uploaded_by = ?",
             (uid,)),
         "research_sessions": query_all("SELECT * FROM research_sessions WHERE user_id = ?", (uid,)),
+        "ai_chats": [dict(c, messages=query_all("SELECT role, content, citations, attachments, model, created_at "
+                                                "FROM ai_messages WHERE chat_id = ? ORDER BY created_at", (c["id"],)))
+                     for c in query_all("SELECT * FROM ai_chats WHERE user_id = ?", (uid,))],
         "saved_items": query_all("SELECT * FROM saved_items WHERE user_id = ?", (uid,)),
         "drafts": query_all("SELECT * FROM drafts WHERE user_id = ?", (uid,)),
         "tasks_assigned_to_me": query_all("SELECT * FROM tasks WHERE assigned_to = ?", (uid,)),

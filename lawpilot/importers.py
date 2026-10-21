@@ -151,7 +151,7 @@ def _fetch_one(year: int, name: str) -> Dict:
 
 def _exists(db, year: int, name: str) -> bool:
     url = sci_pdf_url(year, name)
-    return db.execute("SELECT 1 FROM sources WHERE source_url = ? AND matter_id IS NULL", (url,)).fetchone() is not None
+    return db.execute("SELECT 1 FROM sources WHERE source_url = ? AND matter_id IS NULL AND chat_id IS NULL", (url,)).fetchone() is not None
 
 
 def _ingest_fetched(db, cfg, year: int, name: str, fetched: Dict, user_id: Optional[str]) -> str:

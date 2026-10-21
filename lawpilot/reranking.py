@@ -50,7 +50,9 @@ def score_one(c, analysis, max_rrf: float, terms: List[str] = None) -> None:
     src = c.source
     c.coverage = coverage(c, terms)
     rel = (c.rrf / max_rrf) if max_rrf else 0.0
-    if src.get("matter_id"):
+    if src.get("chat_id"):
+        authority = 0.65     # the user's own file: what they are asking about
+    elif src.get("matter_id"):
         authority = 0.6
     else:
         authority = KIND_WEIGHT.get(src.get("kind"), COURT_WEIGHT.get(src.get("court_level") or "none", 0.45))
@@ -77,7 +79,9 @@ def score_one(c, analysis, max_rrf: float, terms: List[str] = None) -> None:
         reasons.append("Exact citation / case-name match")
     if getattr(c, "provision", ""):
         reasons.append(f"Provision named in the question: {c.provision}")
-    if src.get("matter_id"):
+    if src.get("chat_id"):
+        reasons.append("From your uploaded file")
+    elif src.get("matter_id"):
         reasons.append("From this matter's documents")
     elif src.get("kind") in KIND_WEIGHT:
         reasons.append("Statutory text")
@@ -110,6 +114,11 @@ def rerank(cands: list, analysis) -> list:
 
 
 def is_relevant(c) -> bool:
+    if c.source.get("chat_id"):
+        # Questions about an uploaded file often paraphrase it ("what rent is payable?"), so a keyword
+        # hit, a little term overlap or a clear semantic match counts.
+        return (c.lex_rank is not None or c.coverage >= 0.15
+                or (c.vec_rank is not None and c.vec_rank < 6 and c.vec_sim >= 0.12))
     return c.exact or bool(getattr(c, "provision", "")) or c.coverage >= MIN_COVERAGE
 
 

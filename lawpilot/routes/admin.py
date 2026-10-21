@@ -38,12 +38,12 @@ def stats():
 
     def group(col):
         return {r[0] or "unknown": r[1] for r in db.execute(
-            f"SELECT {col}, COUNT(*) FROM sources WHERE matter_id IS NULL GROUP BY {col}")}
+            f"SELECT {col}, COUNT(*) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL GROUP BY {col}")}
     return jsonify(
         by_kind=group("kind"), by_class=group("authority_class"), by_court_level=group("court_level"),
         by_verification=group("verification"), by_status=group("legal_status"), by_origin=group("origin"),
-        total_sources=db.execute("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL").fetchone()[0],
-        inactive_sources=db.execute("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND is_active = 0").fetchone()[0],
+        total_sources=db.execute("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL").fetchone()[0],
+        inactive_sources=db.execute("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL AND is_active = 0").fetchone()[0],
         matter_documents=db.execute("SELECT COUNT(*) FROM sources WHERE matter_id IS NOT NULL").fetchone()[0],
         total_passages=db.execute("SELECT COUNT(*) FROM chunks").fetchone()[0],
         fts_rows=db.execute("SELECT COUNT(*) FROM chunks_fts").fetchone()[0],
@@ -77,7 +77,7 @@ def jobs():
 @platform_admin_required
 def list_sources():
     limit, offset = page_args(50)
-    clauses, params = ["matter_id IS NULL"], []
+    clauses, params = ["matter_id IS NULL AND chat_id IS NULL"], []
     q = (request.args.get("q") or "").strip()
     if q:
         clauses.append("(title LIKE ? OR citation LIKE ? OR court LIKE ? OR act_name LIKE ?)")
@@ -297,7 +297,7 @@ def kanoon_import():
 @bp.patch("/corpus/sources/<source_id>")
 @platform_admin_required
 def update_source(source_id):
-    src = query_one("SELECT * FROM sources WHERE id = ? AND matter_id IS NULL", (source_id,))
+    src = query_one("SELECT * FROM sources WHERE id = ? AND matter_id IS NULL AND chat_id IS NULL", (source_id,))
     if not src:
         raise ApiError("Source not found.", 404)
     data = body()
@@ -341,7 +341,7 @@ def update_source(source_id):
 @bp.post("/corpus/sources/<source_id>/version")
 @platform_admin_required
 def new_version(source_id):
-    src = query_one("SELECT * FROM sources WHERE id = ? AND matter_id IS NULL", (source_id,))
+    src = query_one("SELECT * FROM sources WHERE id = ? AND matter_id IS NULL AND chat_id IS NULL", (source_id,))
     if not src:
         raise ApiError("Source not found.", 404)
     meta = {k: src.get(k) for k in META_FIELDS}
@@ -366,7 +366,7 @@ def new_version(source_id):
 @bp.delete("/corpus/sources/<source_id>")
 @platform_admin_required
 def remove_source(source_id):
-    src = query_one("SELECT title FROM sources WHERE id = ? AND matter_id IS NULL", (source_id,))
+    src = query_one("SELECT title FROM sources WHERE id = ? AND matter_id IS NULL AND chat_id IS NULL", (source_id,))
     if not src:
         raise ApiError("Source not found.", 404)
     delete_source(get_db(), cfg(), source_id)
@@ -385,7 +385,7 @@ def add_relation():
         raise ApiError("A source cannot relate to itself.")
     db = get_db()
     for sid in (data["from_source_id"], data["to_source_id"]):
-        if not db.execute("SELECT 1 FROM sources WHERE id = ? AND matter_id IS NULL", (sid,)).fetchone():
+        if not db.execute("SELECT 1 FROM sources WHERE id = ? AND matter_id IS NULL AND chat_id IS NULL", (sid,)).fetchone():
             raise ApiError("Source not found.", 404)
     rid = new_id()
     db.execute("INSERT OR IGNORE INTO authority_relations (id, from_source_id, to_source_id, relation, note) "
@@ -499,6 +499,10 @@ def process_deletion(req_id):
     for (sid,) in db.execute("SELECT s.id FROM sources s JOIN matters m ON m.id = s.matter_id WHERE m.owner_id = ?",
                              (uid,)).fetchall():
         delete_source(db, cfg(), sid)
+    for (sid,) in db.execute("SELECT s.id FROM sources s JOIN ai_chats c ON c.id = s.chat_id WHERE c.user_id = ?",
+                             (uid,)).fetchall():
+        delete_source(db, cfg(), sid)
+    db.execute("DELETE FROM ai_chats WHERE user_id = ?", (uid,))
     db.execute("DELETE FROM matters WHERE owner_id = ?", (uid,))
     db.execute("DELETE FROM research_sessions WHERE user_id = ?", (uid,))
     db.execute("DELETE FROM drafts WHERE user_id = ?", (uid,))
@@ -685,13 +689,13 @@ def overview():
         matters=one("SELECT COUNT(*) FROM matters"),
         matter_documents=one("SELECT COUNT(*) FROM sources WHERE matter_id IS NOT NULL"),
         research_7d=one("SELECT COUNT(*) FROM research_sessions WHERE created_at >= ?", (week_ago,)),
-        library={"total": one("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND is_active = 1"),
-                 "judgments": one("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND kind = 'judgment'"),
-                 "acts": one("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND kind IN "
+        library={"total": one("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL AND is_active = 1"),
+                 "judgments": one("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL AND kind = 'judgment'"),
+                 "acts": one("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL AND kind IN "
                              "('statute', 'constitution', 'rule', 'notification')"),
                  "summaries": one("SELECT COUNT(*) FROM sources WHERE origin = 'seed'"),
                  "passages": one("SELECT COUNT(*) FROM chunks c JOIN sources s ON s.id = c.source_id "
-                                 "WHERE s.matter_id IS NULL"),
+                                 "WHERE s.matter_id IS NULL AND s.chat_id IS NULL"),
                  "stale_embeddings": one("SELECT COUNT(*) FROM chunks WHERE embedding_model IS NOT ?", (model,))},
         last_import=last_import,
         ai={"configured": bool(client), "provider": client.provider if client else None,

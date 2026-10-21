@@ -285,10 +285,10 @@ def plan_sub_questions(question: str, analysis, llm: Optional[LLMClient]) -> Lis
 # ── Orchestration ──────────────────────────────────────────────────────────
 
 def corpus_snapshot(db) -> Dict:
-    rows = db.execute("SELECT authority_class, COUNT(*) FROM sources WHERE is_active = 1 AND matter_id IS NULL "
+    rows = db.execute("SELECT authority_class, COUNT(*) FROM sources WHERE is_active = 1 AND matter_id IS NULL AND chat_id IS NULL "
                       "GROUP BY authority_class").fetchall()
     gen = db.execute("SELECT value FROM meta WHERE key = 'index_generation'").fetchone()
-    last = db.execute("SELECT MAX(updated_at) FROM sources WHERE matter_id IS NULL").fetchone()[0]
+    last = db.execute("SELECT MAX(updated_at) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL").fetchone()[0]
     return {"by_class": {r[0]: r[1] for r in rows}, "total": sum(r[1] for r in rows),
             "index_generation": gen[0] if gen else "0", "last_updated": last}
 

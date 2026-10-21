@@ -476,7 +476,7 @@ def check_draft(db, content: str, template_key: str = None) -> Dict:
     for cit in citations:
         toks = re.findall(r"[a-z0-9]+", cit.lower())
         rows = db.execute("SELECT id, title, citation, alt_citations, legal_status, status_note, verification "
-                          "FROM sources WHERE matter_id IS NULL AND (citation LIKE ? OR alt_citations LIKE ?)",
+                          "FROM sources WHERE matter_id IS NULL AND chat_id IS NULL AND (citation LIKE ? OR alt_citations LIKE ?)",
                           (f"%{toks[0]}%", f"%{toks[0]}%")).fetchall()
         match = None
         for r in rows:

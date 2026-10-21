@@ -121,7 +121,8 @@ def safe_url(url: Optional[str]) -> Optional[str]:
 def ingest(db, cfg, pages: List[Tuple[Optional[int], str]], meta: Dict, *,
            origin: str, user_id: Optional[str] = None, matter_id: Optional[str] = None,
            file_bytes: Optional[bytes] = None, filename: Optional[str] = None, mime: Optional[str] = None,
-           replace_source_id: Optional[str] = None, note: Optional[str] = None) -> IngestResult:
+           replace_source_id: Optional[str] = None, note: Optional[str] = None,
+           chat_id: Optional[str] = None) -> IngestResult:
     job_id = new_id()
     started = now()
     input_ref = filename or meta.get("source_url") or meta.get("title") or "text"
@@ -130,7 +131,7 @@ def ingest(db, cfg, pages: List[Tuple[Optional[int], str]], meta: Dict, *,
     try:
         result = _ingest(db, cfg, pages, meta, origin=origin, user_id=user_id, matter_id=matter_id,
                          file_bytes=file_bytes, filename=filename, mime=mime,
-                         replace_source_id=replace_source_id, note=note)
+                         replace_source_id=replace_source_id, note=note, chat_id=chat_id)
     except Exception as exc:  # recorded for the admin view, then surfaced to the caller
         db.rollback()
         # The rollback also undid the 'running' job row, so record the failure as a fresh row.
@@ -147,7 +148,7 @@ def ingest(db, cfg, pages: List[Tuple[Optional[int], str]], meta: Dict, *,
 
 
 def _ingest(db, cfg, pages, meta, *, origin, user_id, matter_id, file_bytes, filename, mime,
-            replace_source_id, note) -> IngestResult:
+            replace_source_id, note, chat_id=None) -> IngestResult:
     m = _normalise_meta(meta)
     if not m["title"]:
         raise ValueError("A title is required.")
@@ -164,8 +165,12 @@ def _ingest(db, cfg, pages, meta, *, origin, user_id, matter_id, file_bytes, fil
             return IngestResult(replace_source_id, "duplicate", "Identical to the current version; nothing changed.",
                                 version=existing["current_version"])
     else:
-        scope_sql = "matter_id = ?" if matter_id else "matter_id IS NULL"
-        params = (sha, matter_id) if matter_id else (sha,)
+        if chat_id:
+            scope_sql, params = "chat_id = ?", (sha, chat_id)
+        elif matter_id:
+            scope_sql, params = "matter_id = ?", (sha, matter_id)
+        else:
+            scope_sql, params = "matter_id IS NULL AND chat_id IS NULL", (sha,)
         dup = db.execute(f"SELECT id, title FROM sources WHERE sha256 = ? AND {scope_sql} AND is_active = 1",
                          params).fetchone()
         if dup:
@@ -199,10 +204,10 @@ def _ingest(db, cfg, pages, meta, *, origin, user_id, matter_id, file_bytes, fil
         version = 1
         cols = META_FIELDS + ["alt_citations", "origin", "retrieved_at", "matter_id", "uploaded_by",
                               "original_filename", "mime", "page_count", "sha256", "current_version",
-                              "security_flags", "created_at", "updated_at", "id"]
+                              "security_flags", "created_at", "updated_at", "id", "chat_id"]
         vals = [m[k] for k in META_FIELDS] + [json.dumps(m["alt_citations"]), origin, ts, matter_id, user_id,
                                               filename, mime, page_count, sha, 1, json.dumps(sorted(flags)), ts, ts,
-                                              source_id]
+                                              source_id, chat_id]
         db.execute(f"INSERT INTO sources ({', '.join(cols)}) VALUES ({', '.join('?' * len(cols))})", vals)
 
     file_path = None

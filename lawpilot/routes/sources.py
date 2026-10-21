@@ -22,6 +22,11 @@ def _load_source(source_id: str) -> dict:
         raise ApiError("Source not found.", 404)
     if s["matter_id"]:
         load_matter(s["matter_id"])
+    elif s.get("chat_id"):
+        # A file uploaded into an AI-mode chat is private to that chat's owner.
+        owner = query_one("SELECT user_id FROM ai_chats WHERE id = ?", (s["chat_id"],))
+        if not owner or owner["user_id"] != g.user["id"]:
+            raise ApiError("Source not found.", 404)
     return s
 
 
@@ -122,11 +127,11 @@ def coverage():
     db = get_db()
     def counts(col):
         return {r[0] or "unknown": r[1] for r in db.execute(
-            f"SELECT {col}, COUNT(*) FROM sources WHERE matter_id IS NULL AND is_active = 1 GROUP BY {col}")}
+            f"SELECT {col}, COUNT(*) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL AND is_active = 1 GROUP BY {col}")}
     years = db.execute("SELECT MIN(substr(decision_date,1,4)), MAX(substr(decision_date,1,4)) FROM sources "
-                       "WHERE matter_id IS NULL AND decision_date IS NOT NULL").fetchone()
+                       "WHERE matter_id IS NULL AND chat_id IS NULL AND decision_date IS NOT NULL").fetchone()
     return jsonify(by_kind=counts("kind"), by_class=counts("authority_class"), by_court_level=counts("court_level"),
                    by_verification=counts("verification"),
-                   total=db.execute("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND is_active = 1").fetchone()[0],
+                   total=db.execute("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL AND is_active = 1").fetchone()[0],
                    year_range=[years[0], years[1]],
-                   last_updated=db.execute("SELECT MAX(updated_at) FROM sources WHERE matter_id IS NULL").fetchone()[0])
+                   last_updated=db.execute("SELECT MAX(updated_at) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL").fetchone()[0])

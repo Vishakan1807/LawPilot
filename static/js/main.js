@@ -3,6 +3,7 @@
 
 const NAV = [
   { href: "#/home", label: "Home", ico: "⌂" },
+  { href: "#/ai", label: "AI mode", ico: "✧", special: true },
   { href: "#/matters", label: "Matters", ico: "▤" },
   { href: "#/research", label: "Research", ico: "⌕" },
   { href: "#/library", label: "Library", ico: "❏" },
@@ -17,6 +18,7 @@ const NAV = [
 // Platform administrators run the server; they get an operator menu and no practice features.
 const ADMIN_NAV = [
   { href: "#/home", label: "Overview", ico: "⌂" },
+  { href: "#/ai", label: "AI mode", ico: "✧", special: true },
   { section: "Legal library" },
   { href: "#/admin", label: "Manage library", ico: "★" },
   { href: "#/admin?tab=import", label: "Import judgments", ico: "⇩" },
@@ -36,7 +38,7 @@ const ROUTES = [
   [/^\/research$/, "research"], [/^\/research\/(\w+)$/, "researchSession"], [/^\/library$/, "library"],
   [/^\/sources\/(\w+)$/, "source"], [/^\/drafts$/, "drafts"], [/^\/drafts\/new$/, "draftNew"],
   [/^\/drafts\/(\w+)$/, "draft"], [/^\/tasks$/, "tasks"], [/^\/firm$/, "firm"], [/^\/activity$/, "activity"],
-  [/^\/settings$/, "settings"], [/^\/admin$/, "admin"],
+  [/^\/settings$/, "settings"], [/^\/admin$/, "admin"], [/^\/ai$/, "ai"], [/^\/ai\/(\w+)$/, "aiChat"],
 ];
 const PUBLIC = { "/login": "login", "/register": "register", "/forgot": "forgot", "/reset-password": "resetPassword",
   "/invite": "invite" };
@@ -51,7 +53,7 @@ function renderShell() {
           <div class="brand-sub">Legal research &amp; practice</div></div></div>
         <nav class="nav">${(u.is_platform_admin ? ADMIN_NAV : NAV).map(n => n.section
           ? `<div class="nav-section">${esc(n.section)}</div>`
-          : `<a href="${n.href}" data-nav="${n.href}"><span class="ico">${n.ico}</span>${esc(n.label)}</a>`).join("")}</nav>
+          : `<a href="${n.href}" data-nav="${n.href}" class="${n.special ? "nav-ai" : ""}"><span class="ico">${n.ico}</span>${esc(n.label)}${n.special ? `<span class="nav-new">New</span>` : ""}</a>`).join("")}</nav>
         <div class="sidebar-foot"><div><strong>${esc(u.name)}</strong></div>
           <div class="muted">${u.is_platform_admin ? "Platform administrator" : u.firm ? esc(u.firm.name) + " · " + esc(u.firm.role_label) : "Individual practice"}</div>
           <button class="btn link" id="logout" style="margin-top:6px">Sign out</button></div>
@@ -105,6 +107,9 @@ async function route() {
   }
   renderShell();
   markNav(path);
+  const aiPage = /^\/ai(\/|$)/.test(path);
+  document.body.classList.toggle("ai-mode", aiPage);
+  if (!aiPage && $("#ai-root")) $("#main").innerHTML = "";
   for (const [re, name] of ROUTES) {
     const m = path.match(re);
     if (m) {

@@ -67,7 +67,7 @@ def status():
         email_configured=bool(c.smtp_host),
         serverless=bool(getattr(c, "serverless", False)),
         kanoon_api=bool(c.kanoon_api_token),
-        corpus={"total": db.execute("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND is_active = 1").fetchone()[0],
-                "primary": db.execute("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND is_active = 1 AND "
+        corpus={"total": db.execute("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL AND is_active = 1").fetchone()[0],
+                "primary": db.execute("SELECT COUNT(*) FROM sources WHERE matter_id IS NULL AND chat_id IS NULL AND is_active = 1 AND "
                                       "authority_class = 'primary'").fetchone()[0]},
     )

@@ -355,6 +355,32 @@ CREATE TABLE IF NOT EXISTS app_settings (
     updated_at TEXT
 );
 
+-- ── AI mode (chat assistant) ────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS ai_chats (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    matter_id TEXT REFERENCES matters(id) ON DELETE SET NULL,
+    use_library INTEGER NOT NULL DEFAULT 1,
+    pinned INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_ai_chats_user ON ai_chats(user_id, updated_at);
+
+CREATE TABLE IF NOT EXISTS ai_messages (
+    id TEXT PRIMARY KEY,
+    chat_id TEXT NOT NULL REFERENCES ai_chats(id) ON DELETE CASCADE,
+    role TEXT NOT NULL,              -- user | assistant
+    content TEXT NOT NULL,
+    citations TEXT NOT NULL DEFAULT '[]',
+    attachments TEXT NOT NULL DEFAULT '[]',
+    extra TEXT NOT NULL DEFAULT '{}',
+    model TEXT,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_ai_messages_chat ON ai_messages(chat_id, created_at);
+
 -- ── Bulk imports (e.g. Supreme Court judgments dataset) ─────────────────
 CREATE TABLE IF NOT EXISTS import_runs (
     id TEXT PRIMARY KEY,
@@ -402,7 +428,7 @@ CREATE INDEX IF NOT EXISTS ix_chunks_fts_tsv ON chunks_fts USING GIN (tsv);
 JSON_FIELDS = {
     "prefs", "permission_overrides", "alt_citations", "security_flags", "filters",
     "analysis", "answer", "evidence", "verification", "corpus_snapshot", "fields",
-    "check_report",
+    "check_report", "citations", "attachments", "extra",
 }
 
 
@@ -448,6 +474,11 @@ class PGRow(dict):
         if isinstance(key, int):
             return self._vals[key]
         return dict.__getitem__(self, key)
+
+    def __iter__(self):
+        # Like sqlite3.Row: `for (sid,) in rows` / `a, b = row` unpack values. dict(row) still
+        # copies names -> values (it goes through keys() once __iter__ is overridden).
+        return iter(self._vals)
 
 
 def _pg_row_factory(cursor):
@@ -611,6 +642,9 @@ def connect(cfg, pooled: bool = True):
 
 MIGRATIONS = [
     "ALTER TABLE import_runs ADD COLUMN heartbeat_at TEXT",
+    # Files uploaded into an AI-mode chat; NULL for the library and matter documents.
+    "ALTER TABLE sources ADD COLUMN chat_id TEXT REFERENCES ai_chats(id) ON DELETE CASCADE",
+    "CREATE INDEX IF NOT EXISTS ix_sources_chat ON sources(chat_id)",
 ]
 
 

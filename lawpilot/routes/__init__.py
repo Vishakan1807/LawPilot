@@ -7,8 +7,9 @@ from lawpilot.auth import ApiError
 
 
 def register_blueprints(app) -> None:
-    from lawpilot.routes import account, admin, auth_routes, dashboard, drafts, firms, matters, research, sources
-    for mod in (auth_routes, account, firms, matters, research, sources, drafts, dashboard, admin):
+    from lawpilot.routes import (account, admin, ai, auth_routes, dashboard, drafts, firms, matters, research,
+                                 sources)
+    for mod in (auth_routes, account, firms, matters, research, sources, drafts, dashboard, admin, ai):
         app.register_blueprint(mod.bp)
 
 

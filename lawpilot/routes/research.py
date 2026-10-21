@@ -113,8 +113,9 @@ def save_session(session_id):
 def save_authority():
     data = body()
     need(data, "source_id")
-    src = query_one("SELECT id, title, matter_id FROM sources WHERE id = ?", (data["source_id"],))
-    if not src:
+    src = query_one("SELECT id, title, matter_id, chat_id FROM sources WHERE id = ?", (data["source_id"],))
+    if not src or (src["chat_id"] and not query_one("SELECT 1 FROM ai_chats WHERE id = ? AND user_id = ?",
+                                                    (src["chat_id"], g.user["id"]))):
         raise ApiError("Source not found.", 404)
     if src["matter_id"]:
         load_matter(src["matter_id"])

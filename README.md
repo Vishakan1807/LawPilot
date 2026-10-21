@@ -29,6 +29,16 @@ flags claims it cannot support, and says so when its library has nothing relevan
 - Clear outcomes: answered / not enough authority / nothing relevant in the library / search failed / passages only.
 - Every research session records the exact source versions, embedding model and library snapshot used.
 
+**AI mode** (left sidebar): a chat assistant in the style of ChatGPT / Claude, built for legal work.
+- Private chat history (search, rename, pin, delete), grouped by date.
+- Attach PDFs, Word and text files to a chat (button or drag and drop) and ask questions about them or ask for a
+  summary. Summaries read the whole file, structured by document type (judgment, contract, pleading), and long files
+  are condensed piece by piece first.
+- Every answer runs the same hybrid retrieval as Research over the chat's files, an optional linked matter and
+  (toggle) the legal library. Follow-up questions are rewritten using the conversation before searching.
+- Answers cite passages inline; click a citation to see the passage. Every cited statement is checked against its
+  source. File text is treated as untrusted data, and chat files never appear in the library or anyone else's search.
+
 **Drafting**: nine Indian templates (Section 138 notice, arbitration notices and petitions, Article 226 writ,
 commercial plaint, bail application, opinion, written submissions), pre-filing checks (empty fields, overruled
 authorities, old vs new criminal codes, verification, Section 12A), versions, Word export, AI drafting help that
