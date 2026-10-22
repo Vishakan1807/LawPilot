@@ -827,3 +827,58 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
   .ai-launch::after, .appbar-ai::after, .btn.primary::after { display: none; }
 }
 :root[data-theme="brief"] .card:hover { border-top-color: var(--accent); }
+
+/* ── LawPilot AI placement ────────────────────────────────────
+   The flagship feature gets a floating button on every page (bottom right) and a
+   "Featured" card at the foot of the sidebar, away from the LawPilot brand. */
+.sidebar .ai-launch { margin: auto 0 12px; padding-top: 18px; }
+.sidebar .ai-launch + .sidebar-foot { margin-top: 0; }
+.ai-launch-tag { position: absolute; top: 6px; right: 10px; font: 700 .58rem/1 var(--sans); letter-spacing: .1em;
+  text-transform: uppercase; color: var(--gold); }
+
+.ai-fab { position: fixed; right: 26px; bottom: 24px; z-index: 40; isolation: isolate; display: flex; align-items: center; gap: 12px;
+  padding: 8px 20px 8px 8px; border-radius: 999px; color: var(--accent-ink); overflow: hidden;
+  background: linear-gradient(120deg, var(--accent), color-mix(in srgb, var(--accent) 50%, var(--gold)));
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 38%, transparent), 0 2px 8px rgba(0, 0, 0, .18);
+  animation: lp-fab-in .6s var(--ease) .3s backwards, lp-fab-glow 4s ease-in-out 1s infinite;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+.ai-fab::before {                  /* turning ring of light around the button */
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 2px;
+  background: conic-gradient(from var(--lp-ang), rgba(255, 255, 255, .85), transparent 30%, transparent 70%, rgba(255, 255, 255, .85));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: lp-turn 5s linear infinite; opacity: .7; }
+.ai-fab::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .35) 50%, transparent 65%);
+  transform: translateX(-130%); transition: transform .8s var(--ease); }
+.ai-fab:hover { text-decoration: none; transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--accent) 50%, transparent), 0 4px 12px rgba(0, 0, 0, .2); }
+.ai-fab:hover::after { transform: translateX(130%); }
+.ai-fab:active { transform: translateY(-1px) scale(.99); }
+.ai-fab-ico { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(255, 255, 255, .18); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .3); transition: transform .35s var(--ease); }
+.ai-fab-ico svg { width: 24px; height: 24px; }
+.ai-fab:hover .ai-fab-ico { transform: rotate(-8deg) scale(1.08); }
+.ai-fab-text { display: flex; flex-direction: column; line-height: 1.2; white-space: nowrap; }
+.ai-fab-text strong { font-family: var(--serif); font-size: 1.02rem; letter-spacing: .01em; }
+.ai-fab-text small { font-size: .72rem; opacity: .85; }
+:root[data-theme="blackcoat"] .ai-fab-ico, :root:not([data-theme]) .ai-fab-ico { background: rgba(0, 0, 0, .07); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12); }
+:root[data-theme="blackcoat"] .ai-fab::before { background: conic-gradient(from var(--lp-ang), #cdb27a, transparent 30%, transparent 70%, #cdb27a); }
+@keyframes lp-fab-in { from { opacity: 0; transform: translateY(20px) scale(.9); } }
+@keyframes lp-fab-glow { 50% { box-shadow: 0 10px 38px color-mix(in srgb, var(--gold) 50%, transparent), 0 2px 8px rgba(0, 0, 0, .18); } }
+body.ai-mode .ai-fab { display: none; }
+.main { padding-bottom: 110px; }
+body.ai-mode .main { padding-bottom: 0; }
+.toast-wrap { bottom: 96px; }
+body.ai-mode .toast-wrap { bottom: 18px; }
+@media (max-width: 860px) {
+  .ai-fab { right: 16px; bottom: 16px; padding: 7px; }
+  .ai-fab-text { display: none; }
+  .ai-fab-ico { width: 46px; height: 46px; }
+  .toast-wrap { bottom: 86px; right: 12px; left: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-fab, .ai-fab::before { animation: none; }
+  .ai-fab::after { display: none; }
+  .ai-fab:hover { transform: none; }
+}

@@ -62,14 +62,15 @@ function renderShell() {
       <aside class="sidebar" id="sidebar">
         <div class="brand"><div class="brand-mark">L</div><div><div class="brand-name">LawPilot</div>
           <div class="brand-sub">Legal research &amp; practice</div></div></div>
+        <nav class="nav">${(u.is_platform_admin ? ADMIN_NAV : NAV).map(n => n.section
+          ? `<div class="nav-section">${esc(n.section)}</div>`
+          : `<a href="${n.href}" data-nav="${n.href}"><span class="ico">${n.ico}</span>${esc(n.label)}</a>`).join("")}</nav>
         <a class="ai-launch" href="#/ai" data-nav="#/ai" title="Open LawPilot AI (${SHORTCUT_LABEL})">
+          <span class="ai-launch-tag">Featured</span>
           <span class="ai-launch-ico">${ADVOCATE_BANDS}</span>
           <span class="ai-launch-text"><strong>LawPilot AI</strong><small>Ask · Summarise · Cite</small></span>
           <span class="ai-launch-go" aria-hidden="true">→</span>
         </a>
-        <nav class="nav">${(u.is_platform_admin ? ADMIN_NAV : NAV).map(n => n.section
-          ? `<div class="nav-section">${esc(n.section)}</div>`
-          : `<a href="${n.href}" data-nav="${n.href}"><span class="ico">${n.ico}</span>${esc(n.label)}</a>`).join("")}</nav>
         <div class="sidebar-foot"><div><strong>${esc(u.name)}</strong></div>
           <div class="muted">${u.is_platform_admin ? "Platform administrator" : u.firm ? esc(u.firm.name) + " · " + esc(u.firm.role_label) : "Individual practice"}</div>
           <button class="btn link" id="logout" style="margin-top:6px">Sign out</button></div>
@@ -79,13 +80,15 @@ function renderShell() {
           <button class="btn small menu-btn" id="menu" aria-label="Open menu">☰</button>
           <strong class="appbar-brand">LawPilot</strong>
           <span class="spacer"></span>
-          <a class="appbar-ai" href="#/ai" title="Open LawPilot AI (${SHORTCUT_LABEL})">${ADVOCATE_BANDS}<span>Ask LawPilot AI</span>
-            <kbd class="ai-kbd">${SHORTCUT_LABEL}</kbd></a>
           <span class="ts-label"></span>${themeSwitchHtml()}
         </header>
         <main class="main" id="main"></main>
       </div>
-    </div>`;
+    </div>
+    <a class="ai-fab" href="#/ai" title="Open LawPilot AI (${SHORTCUT_LABEL})" aria-label="Ask LawPilot AI">
+      <span class="ai-fab-ico">${ADVOCATE_BANDS}</span>
+      <span class="ai-fab-text"><strong>Ask LawPilot AI</strong><small>Cited legal answers · ${SHORTCUT_LABEL}</small></span>
+    </a>`;
   $("#logout").addEventListener("click", async () => {
     try { await api("POST", "/api/auth/logout"); } catch (e) { /* signing out anyway */ }
     State.user = null;
