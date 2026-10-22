@@ -296,15 +296,6 @@ input[type=password]::-ms-reveal, input[type=password]::-ms-clear { display: non
 
 /* ── AI mode ────────────────────────────────────────────────
    A full-height chat workspace: chat history | conversation + composer. */
-.nav a.nav-ai { position: relative; margin: 2px 0 6px; background: linear-gradient(120deg,
-  color-mix(in srgb, var(--accent) 14%, transparent), color-mix(in srgb, var(--gold) 14%, transparent)); }
-.nav a.nav-ai .ico { color: var(--gold); opacity: 1; font-size: 1.05rem; }
-.nav a.nav-ai .ico svg { width: 17px; height: 17px; display: block; margin: 0 auto; }
-.nav a.nav-ai.active { background: linear-gradient(120deg, color-mix(in srgb, var(--accent) 26%, transparent),
-  color-mix(in srgb, var(--gold) 22%, transparent)); color: var(--text); }
-.nav-new { margin-left: auto; font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  padding: 1px 6px; border-radius: 999px; background: var(--gold); color: var(--surface); }
-
 body.ai-mode .main { padding: 0; max-width: none; height: calc(100vh - 57px); height: calc(100dvh - 57px); overflow: hidden; }
 .ai-root { --ai-w: 780px; display: grid; grid-template-columns: 264px minmax(0, 1fr); height: 100%; position: relative; }
 
@@ -609,3 +600,230 @@ body.ai-mode .main { padding: 0; max-width: none; height: calc(100vh - 57px); he
 
 /* Links inside banners are underlined so they stand out from the banner text in every theme. */
 .banner a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* ══ Polish ═══════════════════════════════════════════════════
+   Refined motion and hover states. Quick (150–300 ms), quiet, and off for reduced-motion users. */
+@property --lp-ang { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+:root { --ease: cubic-bezier(.2, .7, .2, 1); --lift: 0 10px 28px rgba(0, 0, 0, .14), 0 2px 6px rgba(0, 0, 0, .08); }
+::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); }
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--muted) 45%, transparent) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--muted) 40%, transparent); border-radius: 999px;
+  border: 3px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background-color: color-mix(in srgb, var(--muted) 65%, transparent); }
+
+/* ── LawPilot AI launcher (sidebar) ───────────────────────── */
+.ai-launch { position: relative; isolation: isolate; display: flex; align-items: center; gap: 10px; margin: 0 0 14px;
+  padding: 10px; border-radius: 14px; color: var(--text); overflow: hidden;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 20%, var(--surface)),
+    color-mix(in srgb, var(--gold) 16%, var(--surface)));
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 16%, transparent);
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+.ai-launch::before {             /* a slowly turning border of light */
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 1.5px;
+  background: conic-gradient(from var(--lp-ang), var(--accent), var(--gold), transparent 38%, transparent 62%, var(--accent));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: lp-turn 6s linear infinite; }
+.ai-launch::after {              /* sheen that sweeps across on hover */
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .22) 50%, transparent 65%);
+  transform: translateX(-120%); transition: transform .7s var(--ease); }
+.ai-launch:hover { text-decoration: none; transform: translateY(-2px);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--accent) 28%, transparent); }
+.ai-launch:hover::after { transform: translateX(120%); }
+.ai-launch:hover::before { animation-duration: 2.4s; }
+.ai-launch.active { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 32%, var(--surface)),
+  color-mix(in srgb, var(--gold) 26%, var(--surface))); }
+.ai-launch-ico { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px;
+  color: var(--accent-ink); background: linear-gradient(135deg, var(--accent), var(--gold));
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--accent) 35%, transparent); transition: transform .3s var(--ease); }
+.ai-launch-ico svg { width: 20px; height: 20px; }
+.ai-launch:hover .ai-launch-ico { transform: rotate(-6deg) scale(1.06); }
+.ai-launch-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; white-space: nowrap; }
+.ai-launch-go { margin-left: auto; flex: none; color: var(--gold); font-weight: 700; transition: transform .25s var(--ease); }
+.ai-launch:hover .ai-launch-go { transform: translateX(3px); }
+.ai-launch-text strong { font-family: var(--serif); font-size: 1rem; letter-spacing: .01em; }
+.ai-launch-text small { font-size: .7rem; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+.ai-kbd { margin-left: auto; flex: none; font: 600 .66rem/1 var(--sans); padding: 4px 6px; border-radius: 6px;
+  color: var(--muted); background: color-mix(in srgb, var(--surface) 70%, transparent); border: 1px solid var(--border); }
+@keyframes lp-turn { to { --lp-ang: 360deg; } }
+
+/* ── "Ask LawPilot AI" in the top bar ─────────────────────── */
+.appbar-ai { position: relative; display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 8px 0 12px;
+  border-radius: 999px; color: var(--accent-ink); font-weight: 600; font-size: .86rem; overflow: hidden;
+  background: linear-gradient(120deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--gold)));
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 30%, transparent);
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease); }
+.appbar-ai svg { width: 17px; height: 17px; flex: none; }
+.appbar-ai::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .35) 50%, transparent 65%);
+  transform: translateX(-120%); transition: transform .7s var(--ease); }
+.appbar-ai:hover { text-decoration: none; transform: translateY(-1px);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 40%, transparent); }
+.appbar-ai:hover::after { transform: translateX(120%); }
+.appbar-ai .ai-kbd { color: inherit; background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .28); }
+:root[data-theme="blackcoat"] .appbar-ai .ai-kbd, :root:not([data-theme]) .appbar-ai .ai-kbd {
+  background: rgba(0, 0, 0, .06); border-color: rgba(0, 0, 0, .14); }
+body.ai-mode .appbar-ai { display: none; }
+@media (max-width: 860px) {
+  .appbar-ai { padding: 0 12px; }
+  .appbar-ai .ai-kbd { display: none; }
+}
+@media (max-width: 420px) { .appbar-ai span { display: none; } .appbar-ai { padding: 0 10px; } }
+
+/* ── Home-page prompt ─────────────────────────────────────── */
+.ai-hero { position: relative; isolation: isolate; overflow: hidden; display: flex; gap: 18px; align-items: flex-start;
+  padding: 22px 24px; margin: 0 0 20px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, var(--surface)), var(--surface) 55%,
+    color-mix(in srgb, var(--gold) 12%, var(--surface)));
+  box-shadow: var(--shadow); }
+.ai-hero-glow { position: absolute; z-index: -1; width: 420px; height: 420px; right: -140px; top: -220px; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--gold) 30%, transparent), transparent 65%);
+  animation: lp-drift 14s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes lp-drift { to { transform: translate(-90px, 60px) scale(1.15); } }
+.ai-hero-mark { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 15px;
+  color: var(--accent-ink); background: linear-gradient(135deg, var(--accent), var(--gold));
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 35%, transparent); }
+.ai-hero-mark svg { width: 30px; height: 30px; }
+.ai-hero-body { flex: 1; min-width: 0; }
+.ai-hero-title { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ai-hero-tag { font: 600 .68rem/1 var(--sans); letter-spacing: .07em; text-transform: uppercase; padding: 4px 8px; border-radius: 999px;
+  color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); }
+.ai-hero-sub { color: var(--muted); margin: 4px 0 14px; max-width: 640px; }
+.ai-hero-input { display: flex; align-items: center; gap: 6px; padding: 5px 5px 5px 14px; border-radius: 14px;
+  background: var(--surface); border: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0, 0, 0, .06);
+  transition: border-color .2s, box-shadow .2s; }
+.ai-hero-input:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft), 0 6px 20px rgba(0, 0, 0, .08); }
+.ai-hero-input input { border: 0; background: none; padding: 8px 0; font-size: 1rem; box-shadow: none; }
+.ai-hero-input input:focus { outline: none; box-shadow: none; }
+.ai-hero-go { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 11px; cursor: pointer;
+  color: var(--accent-ink); background: var(--accent); transition: transform .2s var(--ease), filter .2s; }
+.ai-hero-go svg { width: 19px; height: 19px; }
+.ai-hero-go:hover { transform: translateY(-1px) scale(1.05); filter: brightness(1.08); }
+.ai-hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ai-hero-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 80%, transparent); color: var(--text);
+  font: inherit; font-size: .83rem; transition: transform .2s var(--ease), border-color .2s, background-color .2s, color .2s; }
+.ai-hero-chip svg { width: 13px; height: 13px; color: var(--gold); }
+.ai-hero-chip:hover { transform: translateY(-2px); border-color: var(--accent); color: var(--accent);
+  background: var(--accent-soft); }
+@media (max-width: 600px) { .ai-hero { flex-direction: column; padding: 18px; } .ai-hero-mark { width: 44px; height: 44px; } }
+
+/* ── Page entrance ────────────────────────────────────────── */
+.main > * { animation: lp-rise .42s var(--ease) both; }
+.main > *:nth-child(2) { animation-delay: .04s; }
+.main > *:nth-child(3) { animation-delay: .08s; }
+.main > *:nth-child(4) { animation-delay: .12s; }
+.main > *:nth-child(5) { animation-delay: .16s; }
+.main > *:nth-child(n+6) { animation-delay: .2s; }
+.grid > .card { animation: lp-rise .45s var(--ease) both; }
+.grid > .card:nth-child(2) { animation-delay: .05s; }
+.grid > .card:nth-child(3) { animation-delay: .1s; }
+.grid > .card:nth-child(n+4) { animation-delay: .15s; }
+@keyframes lp-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Page titles carry a short gold rule, like a ruled heading in a brief. */
+.page-head h1 { position: relative; padding-bottom: 8px; }
+.page-head h1::after { content: ""; position: absolute; left: 0; bottom: 0; width: 46px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--gold), transparent); transition: width .5s var(--ease); }
+.page-head:hover h1::after { width: 110px; }
+
+/* ── Navigation ───────────────────────────────────────────── */
+.nav a { position: relative; transition: background-color .2s, color .2s, padding-left .25s var(--ease); }
+.nav a::before { content: ""; position: absolute; left: 0; top: 22%; bottom: 22%; width: 3px; border-radius: 3px;
+  background: var(--accent); transform: scaleY(0); transition: transform .25s var(--ease); }
+.nav a:hover { padding-left: 14px; }
+.nav a:hover::before, .nav a.active::before { transform: scaleY(1); }
+.nav a .ico { transition: transform .25s var(--ease), opacity .2s; }
+.nav a:hover .ico { transform: scale(1.18); opacity: 1; }
+:root[data-theme="blackcoat"] .nav a.active { box-shadow: none; }
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.btn { position: relative; overflow: hidden; transition: transform .18s var(--ease), box-shadow .2s var(--ease),
+  background-color .2s, border-color .2s, color .2s, filter .2s; }
+.btn:not(.link):not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 0, 0, .1);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
+.btn:not(.link):not(:disabled):active { transform: translateY(0) scale(.98); box-shadow: none; }
+.btn.primary::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .32) 50%, transparent 65%);
+  transform: translateX(-130%); transition: transform .65s var(--ease); }
+.btn.primary:not(:disabled):hover::after { transform: translateX(130%); }
+.btn.primary:not(:disabled):hover { box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 35%, transparent); }
+.btn.danger:not(:disabled):hover { background: var(--bad-soft); border-color: var(--bad); }
+.btn.link { background-image: linear-gradient(currentColor, currentColor); background-size: 0 1px;
+  background-position: 0 100%; background-repeat: no-repeat; transition: background-size .25s var(--ease); }
+.btn.link:hover { background-size: 100% 1px; }
+
+/* Plain text links grow an underline. */
+.main a:not([class]), .banner a { text-decoration: none; background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0 1px; background-position: 0 100%; background-repeat: no-repeat; transition: background-size .28s var(--ease); }
+.main a:not([class]):hover, .banner a:hover { text-decoration: none; background-size: 100% 1px; }
+.banner a { background-size: 100% 1px; }
+
+/* ── Cards, lists, tables ─────────────────────────────────── */
+.card { transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s; }
+.card:hover { border-color: color-mix(in srgb, var(--accent) 28%, var(--border)); }
+.grid > .card:hover { transform: translateY(-3px); box-shadow: var(--lift); }
+.grid > .card .stat { transition: color .25s; }
+.grid > .card:hover .stat { color: var(--accent); }
+.list-item { margin: 0 -10px; padding: 10px; border-radius: 8px; transition: background-color .2s, transform .2s var(--ease); }
+.list-item:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+tbody tr { transition: background-color .15s; }
+tbody tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+.evidence { transition: border-color .2s, box-shadow .25s var(--ease), transform .25s var(--ease); }
+.evidence:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); box-shadow: var(--lift); }
+.badge { transition: transform .2s var(--ease); }
+.cite, .ai-cite { transition: transform .15s var(--ease), background-color .15s, color .15s; }
+.cite:hover, .ai-cite:hover { transform: translateY(-1px) scale(1.08); }
+.cite:hover { background: var(--accent); color: var(--accent-ink); }
+
+/* ── Tabs and toggles ─────────────────────────────────────── */
+.tabs button { position: relative; transition: color .2s; }
+.tabs button::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: -1px; height: 2px; border-radius: 2px;
+  background: var(--accent); transform: scaleX(0); transition: transform .28s var(--ease); }
+.tabs button:hover { color: var(--text); }
+.tabs button:hover::after { transform: scaleX(.5); opacity: .5; }
+.tabs button.active { border-bottom-color: transparent; }
+.tabs button.active::after { transform: scaleX(1); opacity: 1; }
+.mode-toggle button { transition: background-color .2s, color .2s; }
+.mode-toggle button:not(.active):hover { background: var(--surface-2); color: var(--text); }
+
+/* ── Form fields ──────────────────────────────────────────── */
+input:not([type]), input[type=text], input[type=email], input[type=password], input[type=date], input[type=datetime-local],
+input[type=number], input[type=search], input[type=url], select, textarea {
+  transition: border-color .2s, box-shadow .2s, background-color .2s; }
+input:not([type]):hover, input[type=text]:hover, input[type=email]:hover, input[type=password]:hover, input[type=date]:hover,
+input[type=number]:hover, input[type=search]:hover, input[type=url]:hover, select:hover, textarea:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.ai-composer textarea:focus, .ai-hero-input input:focus, .ai-search:focus { box-shadow: none; }
+
+/* ── Brand, modal, toast ──────────────────────────────────── */
+.brand-mark { transition: transform .35s var(--ease); }
+.brand:hover .brand-mark { transform: rotate(-8deg) scale(1.06); }
+.modal-back { animation: lp-fade .2s ease both; -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.modal { animation: lp-pop .28s var(--ease) both; }
+.toast { animation: lp-slide .3s var(--ease) both; }
+@keyframes lp-fade { from { opacity: 0; } }
+@keyframes lp-pop { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+@keyframes lp-slide { from { opacity: 0; transform: translateX(16px); } }
+
+/* ── AI mode details ──────────────────────────────────────── */
+.ai-chat-item { transition: background-color .18s, padding-left .22s var(--ease); }
+.ai-chat-item:hover { padding-left: 14px; }
+.ai-src { transition: border-color .15s, transform .2s var(--ease), box-shadow .2s var(--ease); }
+.ai-src:hover { box-shadow: var(--lift); }
+.ai-avatar, .ai-orb { transition: transform .4s var(--ease); }
+.ai-msg.assistant:hover .ai-avatar { transform: rotate(-6deg); }
+.ai-orb { animation: lp-breathe 4.5s ease-in-out infinite; }
+@keyframes lp-breathe { 50% { box-shadow: 0 8px 40px color-mix(in srgb, var(--gold) 45%, transparent); transform: translateY(-2px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-launch::before, .ai-hero-glow, .ai-orb { animation: none; }
+  .main > *, .grid > .card, .modal, .modal-back, .toast { animation: none; }
+  .btn, .card, .nav a, .list-item, .ai-launch, .appbar-ai, .ai-hero-chip, .evidence { transition: none; }
+  .btn:not(.link):not(:disabled):hover, .grid > .card:hover, .ai-launch:hover, .appbar-ai:hover, .ai-hero-chip:hover { transform: none; }
+  .ai-launch::after, .appbar-ai::after, .btn.primary::after { display: none; }
+}
+:root[data-theme="brief"] .card:hover { border-top-color: var(--accent); }

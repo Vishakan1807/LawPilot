@@ -143,9 +143,66 @@ Pages.ai = async function (chatId) {
   renderChatList();
   renderComposerTools();
   closeAiDrawer();
-  $("#ai-input").focus();
+  const input = $("#ai-input");
+  input.focus();
+  const handoff = State.aiPrefill;
+  State.aiPrefill = null;
+  if (handoff && !chatId) {
+    input.value = handoff.text;
+    input.dispatchEvent(new Event("input"));
+    if (handoff.send) sendAiMessage();
+    else if (handoff.attach) toast("Attach your file with the 📎 button, then press Enter.");
+  }
 };
 Pages.aiChat = Pages.ai;
+
+/* ── "Ask LawPilot AI" prompt on the home pages ───────────────────── */
+const AI_HERO_CHIPS = [
+  { label: "Anticipatory bail for attempt to murder", send: true,
+    text: "Can anticipatory bail be granted for attempt to murder? Give the relevant BNSS and CrPC provisions and the BNS / IPC sections." },
+  { label: "IPC 420 → BNS", send: true, text: "What is the BNS equivalent of IPC Section 420 and what changed in the new provision?" },
+  { label: "Summarise a judgment", attach: true,
+    text: "Summarise this judgment: facts, issues, arguments, ratio decidendi and the final order." },
+  { label: "Review a contract", attach: true,
+    text: "Review this agreement for my client and list the risky or one-sided clauses with suggested changes." },
+];
+
+function aiHeroHtml() {
+  return `<form class="ai-hero" id="ai-hero" autocomplete="off">
+    <div class="ai-hero-glow" aria-hidden="true"></div>
+    <div class="ai-hero-mark">${AI_ICONS.bands}</div>
+    <div class="ai-hero-body">
+      <div class="ai-hero-title">Ask LawPilot AI <span class="ai-hero-tag">Cited answers</span></div>
+      <div class="ai-hero-sub">Research Indian law, summarise judgments and review contracts. Every answer cites the statute,
+        judgment or file it relies on.</div>
+      <div class="ai-hero-input">
+        <input id="ai-hero-q" type="text" maxlength="4000" aria-label="Ask LawPilot AI"
+          placeholder="e.g. What must a Section 138 NI Act notice contain?">
+        <button type="submit" class="ai-hero-go" aria-label="Ask">${AI_ICONS.send}</button>
+      </div>
+      <div class="ai-hero-chips">${AI_HERO_CHIPS.map((c, i) => `<button type="button" class="ai-hero-chip" data-chip="${i}">
+        ${c.attach ? AI_ICONS.clip : ""}${esc(c.label)}</button>`).join("")}</div>
+    </div></form>`;
+}
+
+function wireAiHero() {
+  const form = $("#ai-hero");
+  if (!form) return;
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const text = $("#ai-hero-q").value.trim();
+    if (!text) { $("#ai-hero-q").focus(); return; }
+    State.aiPrefill = { text, send: true };
+    navigate("#/ai");
+  });
+  form.addEventListener("click", e => {
+    const chip = e.target.closest("[data-chip]");
+    if (!chip) return;
+    const c = AI_HERO_CHIPS[+chip.dataset.chip];
+    State.aiPrefill = { text: c.text, send: !!c.send, attach: !!c.attach };
+    navigate("#/ai");
+  });
+}
 
 function aiLayout() {
   return `<div class="ai-root" id="ai-root">

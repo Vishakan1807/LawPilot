@@ -23,6 +23,7 @@ Pages.home = async function () {
       <p>${new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p></div>
       <div class="row">${can("matter.create") ? `<a class="btn" href="#/matters?new=1">+ New matter</a>` : ""}
       <a class="btn primary" href="#/research">Ask a legal question</a></div></div>
+    ${aiHeroHtml()}
 
     ${setup.length ? `<div class="banner info"><strong>Setup notes</strong>${setup.map(s => `<div>• ${esc(s)}</div>`).join("")}
       ${u.is_platform_admin ? `<div class="row" style="margin-top:6px"><a href="#/admin?tab=ai">AI settings</a><a href="#/admin?tab=import">Import judgments</a></div>` : ""}</div>` : ""}
@@ -69,6 +70,7 @@ Pages.home = async function () {
           <a href="#/sources/${s.source_id}">${esc(s.title)}</a> ${statusBadge(s.legal_status)}
           <div class="muted">${esc(s.citation || "")}</div></div>`).join("") : `<div class="empty">Save authorities from research results to see them here.</div>`}</div>
     </div>`);
+  wireAiHero();
 };
 
 function priorityBadge(p) {
@@ -93,6 +95,7 @@ async function adminHome() {
     <div class="page-head"><div><h1>${greet}, ${esc(State.user.name.split(" ")[0])}</h1>
       <p>Platform overview · ${esc(o.database)} · registration ${o.registration_open ? "open to anyone" : "closed"}</p></div>
       <div class="row"><a class="btn" href="#/admin?tab=import">Import judgments</a><a class="btn primary" href="#/research">Test research</a></div></div>
+    ${aiHeroHtml()}
     ${todo.length ? `<div class="banner ${todo.length > 2 ? "warn" : "info"}"><strong>Needs attention</strong>${todo.map(([t, href, l]) =>
       `<div>• ${esc(t)}${href ? ` <a href="${href}">${esc(l)}</a>` : ""}</div>`).join("")}</div>`
       : `<div class="banner ok"><strong>All set</strong>AI answers, library and search index are in order.</div>`}
@@ -118,4 +121,5 @@ async function adminHome() {
         <span class="spacer"></span><small class="muted">joined ${ago(u.created_at)}</small></div>`).join("")
         : `<div class="empty">No lawyers have signed up yet. Share the address of this server; the first lawyer to create a firm becomes its Firm Admin.</div>`}</div>
     <p class="muted">As platform administrator you see counts only. Matters, client documents and drafts stay private to each firm.</p>`);
+  wireAiHero();
 }
