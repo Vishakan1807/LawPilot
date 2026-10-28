@@ -38,10 +38,7 @@ const SHORTCUT_LABEL = /Mac|iPhone|iPad/.test(navigator.platform || navigator.us
 document.addEventListener("keydown", e => {
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "k" && State.user) {
     e.preventDefault();
-    const cmd = $("#cmdbar-q");
-    if ($("#ai-root")) { const i = $("#ai-input"); if (i) i.focus(); }
-    else if (cmd && cmd.offsetParent) { cmd.focus(); cmd.select(); }
-    else navigate("#/ai");
+    if ($("#ai-root")) { const i = $("#ai-input"); if (i) i.focus(); } else navigate("#/ai");
   }
 });
 
@@ -83,13 +80,12 @@ function renderShell() {
           <button class="btn small menu-btn" id="menu" aria-label="Open menu">☰</button>
           <strong class="appbar-brand">LawPilot</strong>
           <span class="spacer"></span>
-          <form class="cmdbar" id="cmdbar" role="search" autocomplete="off" title="Ask LawPilot AI (${SHORTCUT_LABEL})">
-            <span class="cmdbar-ico" aria-hidden="true">${ADVOCATE_BANDS}</span>
-            <input id="cmdbar-q" type="text" maxlength="4000" placeholder="Ask LawPilot AI anything…" aria-label="Ask LawPilot AI">
-            <kbd class="ai-kbd cmdbar-kbd">${SHORTCUT_LABEL}</kbd>
-            <button type="submit" class="cmdbar-go" aria-label="Ask LawPilot AI">→</button>
-            <span class="cmdbar-label" aria-hidden="true">Ask AI</span>
-          </form>
+          <a class="ai-cta" href="#/ai" title="Open LawPilot AI (${SHORTCUT_LABEL})">
+            <span class="ai-cta-ico" aria-hidden="true">${ADVOCATE_BANDS}</span>
+            <span class="ai-cta-text">Ask LawPilot AI</span>
+            <kbd class="ai-cta-kbd">${SHORTCUT_LABEL}</kbd>
+            <i class="ai-cta-star s1" aria-hidden="true"></i><i class="ai-cta-star s2" aria-hidden="true"></i><i class="ai-cta-star s3" aria-hidden="true"></i>
+          </a>
           <span class="ts-label"></span>${themeSwitchHtml()}
         </header>
         <main class="main" id="main"></main>
@@ -102,29 +98,9 @@ function renderShell() {
     location.reload();
   });
   $("#menu").addEventListener("click", () => $("#sidebar").classList.toggle("open"));
-  wireCommandBar();
   wireThemeSwitches();
 }
 
-/* The global "Ask LawPilot AI" bar in the top header: type and press Enter from any page. */
-function wireCommandBar() {
-  const form = $("#cmdbar"), input = $("#cmdbar-q");
-  input.addEventListener("input", () => form.classList.toggle("has-text", !!input.value.trim()));
-  input.addEventListener("keydown", e => { if (e.key === "Escape") { input.value = ""; form.classList.remove("has-text"); input.blur(); } });
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    const text = input.value.trim();
-    input.value = "";
-    form.classList.remove("has-text");
-    input.blur();
-    if (text) State.aiPrefill = { text, send: true };
-    navigate("#/ai");
-  });
-  // On phones the bar is a compact button that opens AI mode.
-  form.addEventListener("click", e => {
-    if (getComputedStyle(input).display === "none") { e.preventDefault(); navigate("#/ai"); }
-  });
-}
 
 function markNav(path) {
   const hash = location.hash || "#/home";

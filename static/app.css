@@ -831,50 +831,67 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 
 
 /* ── LawPilot AI placement ────────────────────────────────────
-   A global command bar in the top header on every page, plus a "Featured" card at the
+   A shining "Ask LawPilot AI" button in the top header on every page, plus a "Featured" card at the
    foot of the sidebar. */
 .sidebar .ai-launch { margin: auto 0 12px; padding-top: 18px; }
 .sidebar .ai-launch + .sidebar-foot { margin-top: 0; }
 .ai-launch-tag { position: absolute; top: 6px; right: 10px; font: 700 .58rem/1 var(--sans); letter-spacing: .1em;
   text-transform: uppercase; color: var(--gold); }
 
-.cmdbar { position: relative; isolation: isolate; display: flex; align-items: center; gap: 8px; width: 380px; max-width: 46vw;
-  height: 40px; padding: 0 6px 0 6px; border-radius: 999px; cursor: text;
-  background: color-mix(in srgb, var(--surface) 92%, var(--gold));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 55%, transparent), 0 4px 16px color-mix(in srgb, var(--gold) 18%, transparent);
-  transition: width .35s var(--ease), box-shadow .25s var(--ease), background-color .25s; }
-.cmdbar::before {                  /* champagne ring that slowly turns */
-  content: ""; position: absolute; inset: -1px; z-index: -1; border-radius: inherit; padding: 1.5px;
-  background: conic-gradient(from var(--lp-ang), var(--gold), transparent 28%, transparent 72%, var(--gold));
+
+/* ── "Ask LawPilot AI" header button: shines, glints and opens AI mode ── */
+.ai-cta { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 10px; height: 42px;
+  padding: 0 10px 0 5px; border-radius: 999px; color: var(--accent-ink); font-weight: 650; letter-spacing: .01em;
+  background: linear-gradient(110deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 55%, var(--gold)) 35%,
+    var(--gold) 50%, color-mix(in srgb, var(--accent) 55%, var(--gold)) 65%, var(--accent) 100%);
+  background-size: 250% 100%;
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 35%, transparent), 0 0 0 1px color-mix(in srgb, var(--gold) 60%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, .3);
+  animation: lp-cta-flow 6s ease-in-out infinite, lp-cta-glow 3.2s ease-in-out infinite;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+.ai-cta::before {                  /* turning ring of light */
+  content: ""; position: absolute; inset: -2px; z-index: -1; border-radius: inherit; padding: 2px;
+  background: conic-gradient(from var(--lp-ang), #fff7dc, var(--gold) 12%, transparent 30%, transparent 70%, var(--gold) 88%, #fff7dc);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  animation: lp-turn 7s linear infinite; opacity: .9; }
-.cmdbar:hover { box-shadow: 0 0 0 1px var(--gold), 0 6px 22px color-mix(in srgb, var(--gold) 30%, transparent); }
-.cmdbar:focus-within { width: 520px; background: var(--surface);
-  box-shadow: 0 0 0 1.5px var(--gold), 0 0 0 5px color-mix(in srgb, var(--gold) 22%, transparent), 0 10px 30px rgba(0, 0, 0, .16); }
-.cmdbar-ico { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
-  color: var(--accent-ink); background: linear-gradient(135deg, var(--accent), var(--gold));
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent); transition: transform .3s var(--ease); }
-.cmdbar-ico svg { width: 17px; height: 17px; }
-.cmdbar:hover .cmdbar-ico, .cmdbar:focus-within .cmdbar-ico { transform: rotate(-8deg) scale(1.06); }
-.cmdbar input { flex: 1; min-width: 0; height: 100%; padding: 0 2px; border: 0; background: none; box-shadow: none;
-  color: var(--text); font-size: .92rem; }
-.cmdbar input:hover { border: 0; }
-.cmdbar input:focus { outline: none; box-shadow: none; }
-.cmdbar input::placeholder { color: var(--muted); }
-.cmdbar-kbd { margin: 0 4px 0 0; color: var(--gold); border-color: color-mix(in srgb, var(--gold) 45%, transparent); }
-.cmdbar-go { display: none; flex: none; width: 30px; height: 30px; border: 0; border-radius: 50%; cursor: pointer;
-  background: var(--accent); color: var(--accent-ink); font-weight: 700; transition: transform .2s var(--ease); }
-.cmdbar-go:hover { transform: scale(1.08); }
-.cmdbar.has-text .cmdbar-go { display: grid; place-items: center; }
-.cmdbar.has-text .cmdbar-kbd { display: none; }
-.cmdbar-label { display: none; }
-body.ai-mode .cmdbar { display: none; }
-@media (max-width: 1100px) { .cmdbar { width: 300px; } .cmdbar:focus-within { width: 400px; } }
-@media (max-width: 860px) {        /* phones: a compact "Ask AI" button that opens AI mode */
-  .cmdbar, .cmdbar:focus-within { width: auto; max-width: none; padding: 0 14px 0 5px; cursor: pointer; }
-  .cmdbar input, .cmdbar-kbd, .cmdbar-go, .cmdbar.has-text .cmdbar-go { display: none; }
-  .cmdbar { flex: none; }
-  .cmdbar-label { display: inline; white-space: nowrap; font-weight: 600; font-size: .86rem; color: var(--text); }
+  animation: lp-turn 4s linear infinite; }
+.ai-cta::after {                   /* glint that sweeps across every few seconds */
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; overflow: hidden;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, .65) 48%, rgba(255, 255, 255, .15) 54%, transparent 62%)
+    no-repeat; background-size: 220% 100%; background-position: 160% 0;
+  animation: lp-cta-glint 3.6s ease-in-out infinite; }
+.ai-cta:hover { text-decoration: none; transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--gold) 50%, transparent), 0 0 0 1px var(--gold), inset 0 1px 0 rgba(255, 255, 255, .4); }
+.ai-cta:hover::after { animation-duration: 1.2s; }
+.ai-cta:active { transform: translateY(0) scale(.98); }
+.ai-cta-ico { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255, 255, 255, .2); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35); transition: transform .4s var(--ease); }
+.ai-cta-ico svg { width: 19px; height: 19px; }
+.ai-cta:hover .ai-cta-ico { transform: rotate(-10deg) scale(1.1); }
+.ai-cta-text { white-space: nowrap; font-size: .92rem; text-shadow: 0 1px 1px rgba(0, 0, 0, .12); }
+.ai-cta-kbd { font: 700 .64rem/1 var(--sans); padding: 4px 6px; border-radius: 6px; color: inherit;
+  background: rgba(255, 255, 255, .2); border: 1px solid rgba(255, 255, 255, .35); }
+:root[data-theme="blackcoat"] .ai-cta-ico, :root[data-theme="blackcoat"] .ai-cta-kbd,
+:root:not([data-theme]) .ai-cta-ico, :root:not([data-theme]) .ai-cta-kbd { background: rgba(0, 0, 0, .07); border-color: rgba(0, 0, 0, .15);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12); }
+@media (prefers-color-scheme: light) { :root:not([data-theme]) .ai-cta-ico, :root:not([data-theme]) .ai-cta-kbd {
+  background: rgba(255, 255, 255, .2); border-color: rgba(255, 255, 255, .35); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35); } }
+.ai-cta-star { position: absolute; width: 8px; height: 8px; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle, #fff 0 1px, transparent 1.5px),
+    linear-gradient(#fff, #fff) center / 1px 100% no-repeat, linear-gradient(#fff, #fff) center / 100% 1px no-repeat;
+  filter: drop-shadow(0 0 3px #fff6cf); animation: lp-twinkle 2.8s ease-in-out infinite; }
+.ai-cta-star.s1 { top: -3px; left: 22%; }
+.ai-cta-star.s2 { bottom: -3px; left: 62%; animation-delay: .9s; }
+.ai-cta-star.s3 { top: 4px; right: -3px; animation-delay: 1.8s; }
+@keyframes lp-cta-flow { 50% { background-position: 100% 0; } }
+@keyframes lp-cta-glow { 50% { box-shadow: 0 8px 28px color-mix(in srgb, var(--gold) 55%, transparent),
+  0 0 0 1px var(--gold), inset 0 1px 0 rgba(255, 255, 255, .3); } }
+@keyframes lp-cta-glint { 0%, 55% { background-position: 160% 0; } 85%, 100% { background-position: -60% 0; } }
+@keyframes lp-twinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0); } 45% { opacity: 1; transform: scale(1.15) rotate(45deg); } 70% { opacity: 0; } }
+body.ai-mode .ai-cta { display: none; }
+@media (max-width: 860px) { .ai-cta-kbd { display: none; } .ai-cta { height: 38px; padding-right: 14px; } }
+@media (max-width: 400px) { .ai-cta-text { font-size: .84rem; } }
+@media (prefers-reduced-motion: reduce) {
+  .ai-cta, .ai-cta::before, .ai-cta::after, .ai-cta-star { animation: none; }
+  .ai-cta:hover { transform: none; }
 }
-@media (prefers-reduced-motion: reduce) { .cmdbar::before { animation: none; } .cmdbar { transition: none; } }
