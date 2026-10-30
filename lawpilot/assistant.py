@@ -17,6 +17,7 @@ import json
 import logging
 import re
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
 from lawpilot import query_analysis
@@ -263,7 +264,24 @@ def _pieces(text: str) -> List[str]:
     return pieces
 
 
-def summarise(db, llm: Optional[LLMClient], question: str, files: List[Dict], language: str = "en") -> Dict:
+@dataclass
+class Plan:
+    """Everything decided before the model writes: sources, prompt, notes.
+
+    `ready` holds a finished reply when no model call is needed (no model connected, or the
+    preparation itself failed), so callers can stream, or not, without repeating any logic.
+    """
+    mode: str                                   # answer | summary
+    sources: List[Dict] = field(default_factory=list)
+    notes: List[str] = field(default_factory=list)
+    meta: Dict = field(default_factory=dict)
+    system: str = ""
+    prompt: str = ""
+    max_tokens: int = 5000
+    ready: Optional[Dict] = None
+
+
+def _prepare_summary(db, llm: Optional[LLMClient], question: str, files: List[Dict], language: str = "en") -> Plan:
     sources, docs, notes = [], [], []
     for i, f in enumerate(files, 1):
         text = _file_text(db, f["id"])
@@ -275,22 +293,23 @@ def summarise(db, llm: Optional[LLMClient], question: str, files: List[Dict], la
                         "origin": "file", "filename": f.get("original_filename"), "role": "supporting",
                         "flagged": False})
         docs.append((sid, f, text))
+    plan = Plan(mode="summary", sources=sources, notes=notes, meta={"mode": "summary"}, max_tokens=6000)
 
     if not llm:
-        body = ["**AI answers are not configured on this server yet**, so here is the opening of each file "
-                "instead. An administrator can add an AI provider key under AI settings."]
+        body = ["**AI answers are not configured for your account yet**, so here is the opening of each file "
+                "instead. Connect your own AI model in **Settings → AI models** (Gemini and Groq have free tiers)."]
         for sid, f, text in docs:
             body.append(f"### {f['title']} [{sid}]\n\n> " + text[:900].replace("\n", "\n> ") + " …")
-        return {"content": "\n\n".join(body), "sources": sources, "model": None, "notes": notes, "mode": "summary"}
+        plan.ready = {"content": "\n\n".join(body), "sources": sources, "model": None, "notes": notes, "mode": "summary"}
+        return plan
 
     total = sum(len(t) for _, _, t in docs)
     parts = []
-    model = None
     if total <= DIRECT_CHARS:
         for sid, f, text in docs:
             parts.append(f'<document id="{sid}" title="{_attr(f["title"])}">\n{text}\n</document>')
     else:
-        # Map: condense each piece in parallel. Reduce: summarise the condensed notes.
+        # Map: condense each piece in parallel. Reduce (the streamed part): summarise the condensed notes.
         jobs = []
         for sid, f, text in docs:
             pieces = _pieces(text)
@@ -307,18 +326,25 @@ def summarise(db, llm: Optional[LLMClient], question: str, files: List[Dict], la
                                max_tokens=1800, effort="low")
             return res.text.strip()
 
-        with ThreadPoolExecutor(max_workers=4) as pool:
-            condensed = list(pool.map(condense, jobs))
+        try:
+            with ThreadPoolExecutor(max_workers=4) as pool:
+                condensed = list(pool.map(condense, jobs))
+        except LLMError as exc:
+            plan.ready = failed(plan, exc)
+            return plan
         by_doc: Dict[str, List[str]] = {}
         for (sid, f, n, total_n, _), text in zip(jobs, condensed):
             by_doc.setdefault(sid, []).append(f"(part {n}/{total_n})\n{text}")
         for sid, f, _ in docs:
             parts.append(f'<document id="{sid}" title="{_attr(f["title"])}" note="condensed notes of a long document">\n'
                          + "\n\n".join(by_doc.get(sid, [])) + "\n</document>")
-    prompt = (_language_line(language) + f"USER REQUEST:\n{question}\n\n" + "\n\n".join(parts))
-    res = llm.complete(SUMMARY_SYSTEM, prompt, max_tokens=6000, effort="medium")
-    model = f"{res.provider}:{res.model}"
-    return {"content": res.text.strip(), "sources": sources, "model": model, "notes": notes, "mode": "summary"}
+    plan.system = SUMMARY_SYSTEM
+    plan.prompt = _language_line(language) + f"USER REQUEST:\n{question}\n\n" + "\n\n".join(parts)
+    return plan
+
+
+def summarise(db, llm: Optional[LLMClient], question: str, files: List[Dict], language: str = "en") -> Dict:
+    return generate(_prepare_summary(db, llm, question, files, language), llm)
 
 
 # ── Answers ────────────────────────────────────────────────────────────────
@@ -337,17 +363,14 @@ def _fallback_file_passages(db, files: List[Dict], limit: int = 6) -> List[Candi
     return out
 
 
-def answer(db, cfg, llm: Optional[LLMClient], *, question: str, history: List[Dict], files: List[Dict],
-           attachments: List[Dict], use_library: bool, matter: Optional[dict], chat_id: str,
-           language: str = "en") -> Dict:
+def prepare(db, cfg, llm: Optional[LLMClient], *, question: str, history: List[Dict], files: List[Dict],
+            attachments: List[Dict], use_library: bool, matter: Optional[dict], chat_id: str,
+            language: str = "en") -> Plan:
+    """Search (or read the file, for summaries) and build the prompt; the model has not been called yet."""
     targets = attachments or files
     if targets and SUMMARY_RE.search(question) and (attachments or DOC_REF_RE.search(question) or len(files) == 1
                                                     or not use_library):
-        try:
-            return summarise(db, llm, question, targets[:6], language)
-        except LLMError as exc:
-            return {"content": f"I could not summarise the file: {exc}", "sources": [], "model": None,
-                    "notes": [], "mode": "summary", "error": True}
+        return _prepare_summary(db, llm, question, targets[:6], language)
 
     query = standalone_query(question, history, llm)
     analysis = query_analysis.analyze(query)
@@ -365,19 +388,21 @@ def answer(db, cfg, llm: Optional[LLMClient], *, question: str, history: List[Di
         notes.append("Search could not run fully: " + "; ".join(sorted(set(r.errors))))
     if any(s["flagged"] for s in sources):
         notes.append("Some source text contained instruction-like content; it was treated as data only.")
-    meta = {"query": query, "retrieval": r.stats, "mode": "answer"}
+    plan = Plan(mode="answer", sources=sources, notes=notes,
+                meta={"query": query, "retrieval": r.stats, "mode": "answer"})
 
     if not llm:
-        body = ["**AI answers are not configured on this server yet.** An administrator can add an AI provider "
-                "key under AI settings. Meanwhile, here are the most relevant passages:"]
+        body = ["**AI answers are not configured for your account yet.** Connect your own AI model in "
+                "**Settings → AI models** (Gemini and Groq have free tiers). Meanwhile, here are the most relevant passages:"]
         if not sources:
-            body = ["**AI answers are not configured on this server yet**, and search found nothing relevant "
+            body = ["**AI answers are not configured for your account yet**, and search found nothing relevant "
                     "to this question in " + ("your files or " if files else "") + "the library."]
         for s in sources[:6]:
             label = " — ".join(x for x in (s["citation"], s["pinpoint"]) if x)
             body.append(f"**[{s['id']}] {s['title']}**" + (f" ({label})" if label else "") + "\n\n> "
                         + (s["excerpt"] or "").replace("\n", " "))
-        return {"content": "\n\n".join(body), "sources": sources, "model": None, "notes": notes, **meta}
+        plan.ready = {"content": "\n\n".join(body), "sources": sources, "model": None, "notes": notes, **plan.meta}
+        return plan
 
     scope = []
     if files:
@@ -395,16 +420,49 @@ def answer(db, cfg, llm: Optional[LLMClient], *, question: str, history: List[Di
                      "; ".join(f"{c['from']} -> {c['to']}" for c in analysis.code_correspondence) + "\n")
     lines.append("SOURCES:\n" + (_sources_block(sources) if sources else "(no relevant passages were found)") + "\n")
     lines.append(f"USER'S MESSAGE:\n{question}")
-    try:
-        res = llm.complete(ANSWER_SYSTEM, "\n".join(x for x in lines if x), max_tokens=5000, effort="medium")
-    except LLMError as exc:
-        body = [f"The AI provider returned an error: **{exc}**"]
-        if sources:
-            body.append("Here are the most relevant passages found:")
-            for s in sources[:5]:
-                body.append(f"**[{s['id']}] {s['title']}** {s['pinpoint']}\n\n> " + (s["excerpt"] or "").replace("\n", " "))
-        return {"content": "\n\n".join(body), "sources": sources, "model": None, "notes": notes, "error": True, **meta}
-    content = res.text.strip()
+    plan.system = ANSWER_SYSTEM
+    plan.prompt = "\n".join(x for x in lines if x)
+    return plan
+
+
+def finish(plan: Plan, content: str, model: Optional[str]) -> Dict:
+    """The reply once the model has written `content`: citations are checked against the sources."""
+    content = (content or "").strip()
+    if plan.mode == "summary":
+        return {"content": content, "sources": plan.sources, "model": model, "notes": plan.notes, "mode": "summary"}
     used = set(SOURCE_TAG_RE.findall(content))
-    return {"content": content, "sources": sources, "model": f"{res.provider}:{res.model}", "notes": notes,
-            "verification": verify(content, sources), "cited": sorted(used, key=lambda x: int(x[1:])), **meta}
+    return {"content": content, "sources": plan.sources, "model": model, "notes": plan.notes,
+            "verification": verify(content, plan.sources), "cited": sorted(used, key=lambda x: int(x[1:])),
+            **plan.meta}
+
+
+def failed(plan: Plan, exc: Exception, partial: str = "") -> Dict:
+    """The provider failed (bad key, quota, outage): keep any partial text and show the passages found."""
+    if plan.mode == "summary":
+        body = [partial.strip()] if partial.strip() else []
+        body.append(f"I could not finish the summary: **{exc}**")
+        return {"content": "\n\n".join(body), "sources": plan.sources, "model": None, "notes": plan.notes,
+                "mode": "summary", "error": True}
+    body = [partial.strip(), f"> The AI provider stopped: **{exc}**"] if partial.strip() else \
+        [f"The AI provider returned an error: **{exc}**"]
+    if plan.sources and not partial.strip():
+        body.append("Here are the most relevant passages found:")
+        for s in plan.sources[:5]:
+            body.append(f"**[{s['id']}] {s['title']}** {s['pinpoint']}\n\n> " + (s["excerpt"] or "").replace("\n", " "))
+    return {"content": "\n\n".join(body), "sources": plan.sources, "model": None, "notes": plan.notes,
+            "error": True, **plan.meta}
+
+
+def generate(plan: Plan, llm: Optional[LLMClient]) -> Dict:
+    if plan.ready is not None:
+        return plan.ready
+    try:
+        res = llm.complete(plan.system, plan.prompt, max_tokens=plan.max_tokens, effort="medium")
+    except LLMError as exc:
+        return failed(plan, exc)
+    return finish(plan, res.text, f"{res.provider}:{res.model}")
+
+
+def answer(db, cfg, llm: Optional[LLMClient], **kwargs) -> Dict:
+    """Prepare and write a reply in one go (the non-streaming path)."""
+    return generate(prepare(db, cfg, llm, **kwargs), llm)

@@ -350,8 +350,8 @@ def run_research(db, cfg, llm: Optional[LLMClient], *, user_id: str, question: s
                      ". This is a statement about LawPilot's corpus, not proof that no authority exists.")
     elif not llm:
         outcome = "evidence_only"
-        notes.append("AI synthesis is not configured. Showing the most relevant passages; add an LLM API key "
-                     "to get a written answer.")
+        notes.append("No AI model is connected for your account, so these are the most relevant passages. "
+                     "Connect your own model in Settings → AI models to get a written answer.")
     else:
         try:
             res = llm.complete(SYSTEM_PROMPT, _user_prompt(question, analysis, evidence, sub_questions, matter, language),

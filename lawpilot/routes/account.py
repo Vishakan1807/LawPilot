@@ -1,14 +1,14 @@
-"""Profile, preferences, data export, account deletion, activity history."""
+"""Profile, preferences, data export, account deletion."""
 from __future__ import annotations
 
 import json
 
-from flask import Blueprint, Response, g, jsonify, request
+from flask import Blueprint, Response, g, jsonify
 
 from lawpilot import activity
 from lawpilot.auth import ApiError, login_required
-from lawpilot.db import get_db, new_id, now, query_all, query_one
-from lawpilot.routes import body, page_args
+from lawpilot.db import get_db, new_id, now, query_all
+from lawpilot.routes import body
 from lawpilot.routes.auth_routes import DEFAULT_PREFS, public_user
 
 bp = Blueprint("account", __name__, url_prefix="/api/account")
@@ -119,32 +119,3 @@ def cancel_deletion():
     db.commit()
     activity.log("account.deletion_cancelled", "Cancelled account deletion request", "user", g.user["id"])
     return jsonify(ok=True)
-
-
-@bp.get("/activity")
-@login_required
-def activity_history():
-    """Searchable activity log. scope=firm shows the whole firm for those allowed to see it."""
-    limit, offset = page_args(50)
-    q = (request.args.get("q") or "").strip()
-    scope = request.args.get("scope", "mine")
-    clauses, params = [], []
-    if scope == "firm":
-        if "firm.view_activity" not in g.perms or not g.get("membership"):
-            raise ApiError("Your role cannot view firm activity.", 403)
-        clauses.append("a.firm_id = ?")
-        params.append(g.membership["firm_id"])
-    else:
-        clauses.append("a.user_id = ?")
-        params.append(g.user["id"])
-    if q:
-        clauses.append("(a.summary LIKE ? OR a.action LIKE ? OR u.name LIKE ?)")
-        params += [f"%{q}%"] * 3
-    if request.args.get("action"):
-        clauses.append("a.action LIKE ?")
-        params.append(request.args["action"] + "%")
-    rows = query_all(
-        f"SELECT a.ts, a.action, a.summary, a.matter_id, a.target_type, a.target_id, u.name AS user_name "
-        f"FROM activity_log a LEFT JOIN users u ON u.id = a.user_id WHERE {' AND '.join(clauses)} "
-        f"ORDER BY a.ts DESC LIMIT ? OFFSET ?", params + [limit, offset])
-    return jsonify(items=rows)

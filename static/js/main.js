@@ -29,7 +29,7 @@ const ADMIN_NAV = [
   { section: "Server" },
   { href: "#/admin?tab=users", label: "Users", ico: "☺" },
   { href: "#/admin?tab=firms", label: "Firms", ico: "☷" },
-  { href: "#/activity", label: "My activity", ico: "↻" },
+  { href: "#/activity", label: "Activity logs", ico: "↻" },
   { href: "#/settings", label: "Settings", ico: "⚙" },
 ];
 const SHORTCUT_LABEL = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? "⌘ K" : "Ctrl K";
@@ -52,7 +52,7 @@ const ROUTES = [
   [/^\/settings$/, "settings"], [/^\/admin$/, "admin"], [/^\/ai$/, "ai"], [/^\/ai\/(\w+)$/, "aiChat"],
 ];
 const PUBLIC = { "/login": "login", "/register": "register", "/forgot": "forgot", "/reset-password": "resetPassword",
-  "/invite": "invite" };
+  "/invite": "invite", "/set-password": "setPassword" };
 
 function renderShell() {
   if ($("#main")) return;
@@ -121,8 +121,11 @@ function markNav(path) {
 
 async function route() {
   const { path, query } = parseHash();
+  if (State.user && State.user.must_change_password && path !== "/set-password") {
+    return navigate(`#/set-password?next=${encodeURIComponent(location.hash || "#/home")}`);
+  }
   if (PUBLIC[path]) {
-    if (State.user && path !== "/invite" && path !== "/reset-password") return navigate("#/home");
+    if (State.user && !["/invite", "/reset-password", "/set-password"].includes(path)) return navigate("#/home");
     return Pages[PUBLIC[path]](query);
   }
   if (!State.user) {

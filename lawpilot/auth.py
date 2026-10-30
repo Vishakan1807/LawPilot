@@ -58,12 +58,15 @@ _attempts_lock = threading.Lock()
 MAX_ATTEMPTS, WINDOW_SEC = 8, 15 * 60
 
 
-def check_throttle(key: str) -> None:
+def check_throttle(key: str, limit: int = MAX_ATTEMPTS, window: int = WINDOW_SEC) -> None:
+    if limit <= 0:
+        return
     with _attempts_lock:
-        stamps = [t for t in _attempts.get(key, []) if time.time() - t < WINDOW_SEC]
+        stamps = [t for t in _attempts.get(key, []) if time.time() - t < window]
         _attempts[key] = stamps
-        if len(stamps) >= MAX_ATTEMPTS:
-            raise ApiError("Too many attempts. Try again in 15 minutes.", 429)
+        if len(stamps) >= limit:
+            minutes = max(1, window // 60)
+            raise ApiError(f"Too many attempts. Try again in {minutes} minutes.", 429)
 
 
 def record_failure(key: str) -> None:

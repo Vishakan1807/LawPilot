@@ -355,6 +355,22 @@ CREATE TABLE IF NOT EXISTS app_settings (
     updated_at TEXT
 );
 
+-- ── Each user's own AI model keys (bring your own key) ──────────────────
+CREATE TABLE IF NOT EXISTS user_llm_keys (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    provider TEXT NOT NULL,
+    key_enc TEXT NOT NULL,           -- encrypted with the server secret; never returned to the browser
+    key_hint TEXT,                   -- last four characters, for recognition
+    model TEXT NOT NULL,
+    is_active INTEGER NOT NULL DEFAULT 0,
+    last_used_at TEXT,
+    last_error TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE (user_id, provider)
+);
+
 -- ── AI mode (chat assistant) ────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS ai_chats (
     id TEXT PRIMARY KEY,
@@ -645,6 +661,10 @@ MIGRATIONS = [
     # Files uploaded into an AI-mode chat; NULL for the library and matter documents.
     "ALTER TABLE sources ADD COLUMN chat_id TEXT REFERENCES ai_chats(id) ON DELETE CASCADE",
     "CREATE INDEX IF NOT EXISTS ix_sources_chat ON sources(chat_id)",
+    # Accounts created with an emailed temporary password must choose their own before using the app.
+    "ALTER TABLE users ADD COLUMN must_change_password INTEGER NOT NULL DEFAULT 0",
+    "ALTER TABLE users ADD COLUMN temp_password_expires_at TEXT",
+    "ALTER TABLE users ADD COLUMN email_verified_at TEXT",
 ]
 
 

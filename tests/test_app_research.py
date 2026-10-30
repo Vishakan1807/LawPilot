@@ -19,7 +19,7 @@ def test_evidence_only_without_llm(make_client):
     assert s["outcome"] == "evidence_only"
     assert s["evidence"] and "Puttaswamy" in s["evidence"][0]["title"]
     assert s["evidence"][0]["verification"] == "editorial_summary"
-    assert any("not configured" in n for n in s["analysis"]["notes"])
+    assert any("Settings → AI models" in n for n in s["analysis"]["notes"])
 
 
 def test_abstains_when_nothing_relevant(make_client):

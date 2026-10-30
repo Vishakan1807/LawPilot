@@ -14,7 +14,8 @@ from flask import current_app
 log = logging.getLogger("lawpilot.mail")
 
 
-def send_mail(to: str, subject: str, body: str) -> bool:
+def send_mail(to: str, subject: str, body: str, html: str = "") -> bool:
+    """Send a plain-text email (with an optional HTML version). True only if an SMTP server accepted it."""
     cfg = current_app.config["LP"]
     if not cfg.smtp_host:
         log.warning("SMTP not configured; email to %s not sent.\nSubject: %s\n%s", to, subject, body)
@@ -24,6 +25,8 @@ def send_mail(to: str, subject: str, body: str) -> bool:
     msg["To"] = to
     msg["Subject"] = subject
     msg.set_content(body)
+    if html:
+        msg.add_alternative(html, subtype="html")
     try:
         with smtplib.SMTP(cfg.smtp_host, cfg.smtp_port, timeout=20) as smtp:
             smtp.starttls()

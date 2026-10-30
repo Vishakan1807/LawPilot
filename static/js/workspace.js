@@ -135,31 +135,11 @@ function firmSetup(roles) {
 }
 
 /* ── Activity ──────────────────────────────────────────── */
-Pages.activity = async function (query) {
-  const scope = query.get("scope") || "mine";
-  const q = query.get("q") || "";
-  const canFirm = can("firm.view_activity");
-  setMain(`<div class="page-head"><div><h1>Activity</h1><p>A record of important actions.</p></div></div>
-    <div class="card"><form id="af" class="row"><input type="search" name="q" value="${esc(q)}" placeholder="Search activity" style="flex:1">
-      ${canFirm ? `<select name="scope" style="width:auto">${options({ mine: "My activity", firm: "Whole firm" }, scope)}</select>` : ""}
-      <button class="btn">Search</button></form></div><div class="card" id="al">${loading()}</div>`);
-  $("#af").addEventListener("submit", e => {
-    e.preventDefault();
-    const f = formObject(e.target);
-    navigate(`#/activity?q=${encodeURIComponent(f.q)}&scope=${f.scope || "mine"}`);
-  });
-  const r = await api("GET", `/api/account/activity?scope=${scope}&q=${encodeURIComponent(q)}&limit=200`);
-  $("#al").innerHTML = r.items.length ? `<table><thead><tr><th>When</th>${scope === "firm" ? "<th>Who</th>" : ""}<th>What</th></tr></thead><tbody>
-    ${r.items.map(a => `<tr><td style="white-space:nowrap">${fmtDateTime(a.ts)}</td>${scope === "firm" ? `<td>${esc(a.user_name || "")}</td>` : ""}
-      <td>${esc(a.summary || a.action)}${a.matter_id ? ` · <a href="#/matters/${a.matter_id}">matter</a>` : ""}<div class="muted mono" style="font-size:.75rem">${esc(a.action)}</div></td></tr>`).join("")}</tbody></table>`
-    : `<div class="empty">No activity found.</div>`;
-};
-
 /* ── Settings ──────────────────────────────────────────── */
 Pages.settings = async function (query) {
   const tab = query.get("tab") || "profile";
   setMain(`<div class="page-head"><div><h1>Settings</h1></div></div>
-    <div class="tabs">${[["profile", "Profile"], ["preferences", "Preferences"], ["security", "Security"], ["data", "Your data"], ["system", "About this server"]]
+    <div class="tabs">${[["profile", "Profile"], ["ai", "AI models"], ["preferences", "Preferences"], ["security", "Security"], ["data", "Your data"], ["system", "About this server"]]
       .map(([k, l]) => `<button data-tab="${k}" class="${tab === k ? "active" : ""}">${l}</button>`).join("")}</div><div id="tab"></div>`);
   $$("[data-tab]").forEach(b => b.addEventListener("click", () => navigate(`#/settings?tab=${b.dataset.tab}`)));
   const el = $("#tab");
@@ -175,6 +155,8 @@ Pages.settings = async function (query) {
       e.preventDefault();
       withBusy($("#pf button"), async () => { await api("PATCH", "/api/account/profile", formObject(e.target)); toast("Profile saved."); refreshUser(); });
     });
+  } else if (tab === "ai") {
+    await renderAiModels(el);
   } else if (tab === "preferences") {
     const p = u.prefs;
     el.innerHTML = `<div class="card" style="max-width:640px"><form id="prf">

@@ -6,23 +6,21 @@ the browser, only whether one is set.
 """
 from __future__ import annotations
 
-import base64
 import dataclasses
-import hashlib
 from typing import Dict, Optional
 
+from lawpilot import crypto
 from lawpilot.db import new_id, now
 
 SECRET_FIELDS = ("anthropic_api_key", "openai_api_key", "openrouter_api_key", "groq_api_key", "gemini_api_key",
-                 "voyage_api_key")
-PLAIN_FIELDS = ("llm_provider", "llm_model", "embedding_provider")
+                 "mistral_api_key", "deepseek_api_key", "voyage_api_key")
+PLAIN_FIELDS = ("llm_provider", "llm_model", "embedding_provider", "shared_key_policy")
+SHARED_KEY_POLICIES = ("admins", "everyone", "nobody")
 ALL_FIELDS = SECRET_FIELDS + PLAIN_FIELDS
 
 
 def _fernet(secret_key: str):
-    from cryptography.fernet import Fernet
-    digest = hashlib.sha256(("lawpilot-settings:" + secret_key).encode()).digest()
-    return Fernet(base64.urlsafe_b64encode(digest))
+    return crypto.fernet(secret_key, "settings")
 
 
 def version(db) -> str:
@@ -84,4 +82,4 @@ def public_view(db, cfg) -> Dict:
         val = getattr(eff, k) or ""
         keys[k] = {"set": bool(val), "source": source, "hint": ("…" + val[-4:]) if len(val) > 8 else ""}
     return {"llm_provider": eff.llm_provider, "llm_model": eff.llm_model,
-            "embedding_provider": eff.embedding_provider, "keys": keys}
+            "embedding_provider": eff.embedding_provider, "shared_key_policy": eff.shared_key_policy, "keys": keys}

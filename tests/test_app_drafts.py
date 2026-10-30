@@ -44,7 +44,8 @@ def test_commercial_plaint_formalities(make_client):
 
 def test_ai_assist_requires_llm(make_client):
     c = make_client("ai@x.test")
-    assert c.post("/api/drafts/assist", {"instruction": "write grounds"}).status_code == 503
+    r = c.post("/api/drafts/assist", {"instruction": "write grounds"})
+    assert r.status_code == 400 and "AI models" in r.json["error"]
 
 
 def test_query_analysis():

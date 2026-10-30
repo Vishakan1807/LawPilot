@@ -1,17 +1,19 @@
 """Personal dashboard and system status."""
 from __future__ import annotations
 
+import logging
 from datetime import date, timedelta
 
-from flask import Blueprint, g, jsonify
+from flask import Blueprint, g, jsonify, request
 
-from lawpilot import __version__
-from lawpilot.auth import accessible_matter_ids, login_required
+from lawpilot import __version__, monitoring
+from lawpilot.auth import accessible_matter_ids, check_throttle, client_ip, login_required, record_failure
 from lawpilot.db import get_db, query_all
 from lawpilot.embeddings import get_embedder
-from lawpilot.routes import cfg, llm
+from lawpilot.routes import cfg, llm_resolution
 
 bp = Blueprint("dashboard", __name__, url_prefix="/api")
+log = logging.getLogger("lawpilot.client")
 
 
 @bp.get("/dashboard")
@@ -50,16 +52,39 @@ def dashboard():
     )
 
 
+@bp.post("/client-errors")
+def client_error():
+    """A JavaScript error from a user's browser. Rate-limited; only the error itself is kept."""
+    key = f"client-error|{client_ip()}"
+    check_throttle(key, limit=20, window=600)
+    record_failure(key)
+    data = request.get_json(silent=True) or {}
+    message = str(data.get("message") or "")[:300]
+    if not message:
+        return "", 204
+    source = str(data.get("source") or "")[:200].split("?", 1)[0]
+    path = str(data.get("path") or "")[:100].split("?", 1)[0]          # route only, never its query string
+    stack = str(data.get("stack") or "")[:2000]
+    try:
+        line = int(data.get("line")) if data.get("line") is not None else None
+    except (TypeError, ValueError):
+        line = None
+    log.warning("Browser error on %s: %s (%s:%s)", path, message, source, line)
+    monitoring.capture_browser_error(message, source, line, stack, path)
+    return "", 204
+
+
 @bp.get("/system/status")
 @login_required
 def status():
     c = cfg()
-    client = llm()
+    res = llm_resolution()
+    client = res.client
     db = get_db()
     return jsonify(
         version=__version__,
         llm={"configured": bool(client), "provider": client.provider if client else None,
-             "model": client.model if client else None},
+             "model": client.model if client else None, "source": res.source, "reason": res.reason},
         embeddings={"model": get_embedder(c).name,
                     "semantic": get_embedder(c).name != "local-hash-v1"},
         database={"engine": "PostgreSQL" if db.dialect == "postgres" else "SQLite",

@@ -8,6 +8,7 @@ const AI = {
 const AI_ACCEPT = ".pdf,.docx,.txt,.md,.html,.htm";
 const AI_ICONS = {
   send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>',
+  stopSq: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>',
   clip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.4 11.1l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
   copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
@@ -132,6 +133,7 @@ Pages.ai = async function (chatId) {
     if (AI.matters === null) {
       AI.matters = State.user.is_platform_admin ? [] : await loadMattersForSelect();
     }
+    try { AI.models = await loadAiModels(); } catch (e) { AI.models = null; }
   }
   await loadChatList();
   if (chatId) {
@@ -232,6 +234,7 @@ function aiLayout() {
             <button class="ai-icon-btn" id="ai-attach" type="button" title="Attach files (PDF, Word, text)" aria-label="Attach files">${AI_ICONS.clip}</button>
             <button class="ai-toggle" id="ai-lib" type="button" aria-pressed="true" title="Search LawPilot's library of Indian statutes and judgments">${AI_ICONS.scale}<span>Law library</span></button>
             <select class="ai-matter" id="ai-matter" aria-label="Link a matter" hidden></select>
+            <span id="ai-model-slot"></span>
             <span class="spacer"></span>
             <button class="ai-send" id="ai-send" type="submit" aria-label="Send" disabled>${AI_ICONS.send}</button>
           </div>
@@ -250,7 +253,7 @@ function wireAi() {
   const autosize = () => {
     input.style.height = "auto";
     input.style.height = Math.min(input.scrollHeight, 240) + "px";
-    $("#ai-send").disabled = AI.busy || !input.value.trim();
+    $("#ai-send").disabled = !AI.busy && !input.value.trim();
   };
   input.addEventListener("input", autosize);
   input.addEventListener("keydown", e => {
@@ -259,7 +262,11 @@ function wireAi() {
       $("#ai-form").requestSubmit();
     }
   });
-  $("#ai-form").addEventListener("submit", e => { e.preventDefault(); sendAiMessage(); });
+  $("#ai-form").addEventListener("submit", e => {
+    e.preventDefault();
+    if (AI.busy) { if (AI.abort) AI.abort.abort(); return; }       // the send button is "Stop" while answering
+    sendAiMessage();
+  });
   $("#ai-new").addEventListener("click", () => { AI.draft = { use_library: true, matter_id: "" }; navigate("#/ai"); });
   $("#ai-attach").addEventListener("click", () => $("#ai-file").click());
   $("#ai-file").addEventListener("change", e => { uploadAiFiles(Array.from(e.target.files)); e.target.value = ""; });
@@ -481,6 +488,7 @@ function messageHtml(m, isLast) {
     <div class="ai-avatar">${AI_ICONS.bands}</div>
     <div class="ai-body">
       ${extra.mode === "summary" ? `<div class="ai-mode-tag">Document summary</div>` : ""}
+      ${extra.stopped ? `<div class="ai-mode-tag stopped">Stopped early</div>` : ""}
       <div class="ai-md">${renderMarkdown(m.content)}</div>
       ${notes}
       ${shown.length ? `<div class="ai-sources">${shown.map(sourceCard).join("")}</div>` : ""}
@@ -578,7 +586,26 @@ function currentSettings() {
   return AI.draft;
 }
 
+function renderModelSwitcher() {
+  const slot = $("#ai-model-slot");
+  if (!slot) return;
+  slot.innerHTML = AI.models ? aiModelSwitcherHtml(AI.models) : "";
+  const sel = $("#ai-model");
+  if (!sel) return;
+  sel.addEventListener("change", async () => {
+    try {
+      AI.models = sel.value === "__server"
+        ? await api("POST", "/api/account/ai/use-server")
+        : await api("POST", `/api/account/ai/${sel.value}/activate`);
+      State.status = null;
+      toast(`Answering with ${sel.options[sel.selectedIndex].text}.`);
+    } catch (e) { fail(e); }
+    renderModelSwitcher();
+  });
+}
+
 function renderComposerTools() {
+  renderModelSwitcher();
   const s = currentSettings();
   const lib = $("#ai-lib");
   lib.setAttribute("aria-pressed", String(!!s.use_library));
@@ -719,8 +746,83 @@ function useSuggestion(s) {
 
 function setBusy(on) {
   AI.busy = on;
-  $("#ai-send").disabled = on || !$("#ai-input").value.trim();
+  const btn = $("#ai-send");
+  btn.disabled = !on && !$("#ai-input").value.trim();
+  btn.classList.toggle("stop", on);
+  btn.innerHTML = on ? AI_ICONS.stopSq : AI_ICONS.send;
+  btn.setAttribute("aria-label", on ? "Stop answering" : "Send");
+  btn.title = on ? "Stop" : "";
   $("#ai-root").classList.toggle("busy", on);
+}
+
+/* Show the answer as it is written: one live message, re-rendered at most once per frame. */
+function liveAnswer() {
+  let text = "", el = null, frame = 0;
+  const scroller = $("#ai-scroll");
+  const nearBottom = () => scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 140;
+  const paint = () => {
+    frame = 0;
+    const follow = nearBottom();
+    $(".ai-md", el).innerHTML = renderMarkdown(text) + '<span class="ai-caret" aria-hidden="true"></span>';
+    if (follow) scroller.scrollTop = scroller.scrollHeight;
+  };
+  return {
+    add(piece) {
+      if (!el) {
+        const t = $("#ai-typing");
+        if (t) t.remove();
+        $("#ai-thread").insertAdjacentHTML("beforeend", `<div class="ai-msg assistant streaming" id="ai-live">
+          <div class="ai-avatar">${AI_ICONS.bands}</div><div class="ai-body"><div class="ai-md"></div></div></div>`);
+        el = $("#ai-live");
+      }
+      text += piece;
+      if (!frame) frame = requestAnimationFrame(paint);
+    },
+    get text() { return text; },
+    remove() { if (frame) cancelAnimationFrame(frame); if (el) el.remove(); },
+  };
+}
+
+/* Run one streamed reply. Returns the saved assistant message, or a local "stopped" one if the user pressed Stop. */
+async function streamReply(path, payload, steps, onUserMessage) {
+  const stopTyping = startTyping(steps);
+  const live = liveAnswer();
+  AI.abort = new AbortController();
+  let done = null, failure = null;
+  try {
+    await apiStream(path, payload, ev => {
+      if (ev.type === "user_message" && onUserMessage) onUserMessage(ev.message);
+      else if (ev.type === "sources") {
+        const t = $("#ai-typing .ai-typing-text");
+        if (t) t.textContent = ev.mode === "summary" ? "Writing the summary…" : "Writing a cited answer…";
+      } else if (ev.type === "delta") live.add(ev.text);
+      else if (ev.type === "done") { done = ev; }
+      else if (ev.type === "error") failure = new Error(ev.error);
+    }, AI.abort.signal);
+  } catch (e) {
+    if (e.name !== "AbortError") failure = e;
+    else if (live.text.trim()) {
+      done = { message: { id: "local-" + Date.now(), role: "assistant", content: live.text, citations: [],
+        extra: { stopped: true }, model: null }, local: true };
+    }
+  } finally {
+    stopTyping();
+    live.remove();
+    AI.abort = null;
+  }
+  if (failure) throw failure;
+  return done;
+}
+
+/* After Stop, the server saves the partial answer: pick up its real copy a moment later. */
+function resyncAfterStop(chatId) {
+  setTimeout(async () => {
+    if (!AI.chat || AI.chat.id !== chatId || AI.busy) return;
+    try {
+      const r = await api("GET", `/api/ai/chats/${chatId}`);
+      if (AI.chat && AI.chat.id === chatId && !AI.busy) { AI.messages = r.messages; renderConversation(); }
+    } catch (e) { /* keep the local copy */ }
+  }, 1500);
 }
 
 async function sendAiMessage() {
@@ -730,7 +832,6 @@ async function sendAiMessage() {
   if (AI.pending.some(p => p.state === "uploading")) { toast("Wait for the files to finish uploading."); return; }
   const attachments = AI.pending.filter(p => p.id).map(p => ({ id: p.id, title: p.name }));
   setBusy(true);
-  let stop = () => {};
   try {
     const chat = await ensureChat();
     input.value = "";
@@ -741,16 +842,19 @@ async function sendAiMessage() {
     if (!AI.messages.length) $("#ai-thread").innerHTML = "";
     AI.messages.push(temp);
     $("#ai-thread").insertAdjacentHTML("beforeend", messageHtml(temp, false));
-    stop = startTyping(typingSteps(text, attachments));
-    const r = await api("POST", `/api/ai/chats/${chat.id}/messages`, { content: text, attachments: attachments.map(a => a.id) });
-    stop();
-    AI.messages[AI.messages.indexOf(temp)] = r.user_message;
-    AI.messages.push(r.message);
-    AI.chat = r.chat;
+    let saved = false;
+    const r = await streamReply(`/api/ai/chats/${chat.id}/messages/stream`,
+      { content: text, attachments: attachments.map(a => a.id) }, typingSteps(text, attachments),
+      userMessage => { saved = true; AI.messages[AI.messages.indexOf(temp)] = userMessage; });
+    if (r) {
+      AI.messages.push(r.message);
+      if (r.chat) AI.chat = r.chat;
+    }
     renderConversation();
     loadChatList().then(renderChatList);
+    if (r && r.local) resyncAfterStop(chat.id);
+    if (!r && saved) resyncAfterStop(chat.id);
   } catch (e) {
-    stop();
     const t = AI.messages.findIndex(m => String(m.id).startsWith("pending-"));
     if (t >= 0) AI.messages.splice(t, 1);
     renderConversation();
@@ -770,13 +874,13 @@ async function regenerateAi() {
   if (last && last.role === "assistant") AI.messages.pop();
   renderConversation();
   const q = AI.messages[AI.messages.length - 1];
-  const stop = startTyping(typingSteps(q ? q.content : "", (q && q.attachments) || []));
+  const chatId = AI.chat.id;
   try {
-    const r = await api("POST", `/api/ai/chats/${AI.chat.id}/regenerate`);
-    stop();
-    AI.messages.push(r.message);
+    const r = await streamReply(`/api/ai/chats/${chatId}/regenerate/stream`, {},
+      typingSteps(q ? q.content : "", (q && q.attachments) || []));
+    if (r) AI.messages.push(r.message);
+    if (r && r.local) resyncAfterStop(chatId);
   } catch (e) {
-    stop();
     if (last) AI.messages.push(last);
     fail(e);
   } finally {

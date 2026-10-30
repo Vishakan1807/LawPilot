@@ -10,9 +10,7 @@ Pages.home = async function () {
   const greet = new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 17 ? "Good afternoon" : "Good evening";
 
   const setup = [];
-  if (!status.llm.configured) setup.push(u.is_platform_admin
-    ? "AI answers are off. Add an API key in Corpus admin → AI settings (Google Gemini has a free tier)."
-    : "AI answers are off on this server. Ask your administrator to add an AI key.");
+  if (!status.llm.configured) setup.push("AI answers are off for your account. Connect your own AI model in Settings → AI models (Gemini and Groq have free tiers).");
   if (status.corpus.primary === 0) setup.push(status.corpus.total
     ? "The library only has starter case summaries. Import real Supreme Court judgments and add bare Acts (Corpus admin) before relying on research."
     : "The library is empty. Import real Supreme Court judgments and add bare Acts in Corpus admin.");
@@ -26,7 +24,8 @@ Pages.home = async function () {
     ${aiHeroHtml()}
 
     ${setup.length ? `<div class="banner info"><strong>Setup notes</strong>${setup.map(s => `<div>• ${esc(s)}</div>`).join("")}
-      ${u.is_platform_admin ? `<div class="row" style="margin-top:6px"><a href="#/admin?tab=ai">AI settings</a><a href="#/admin?tab=import">Import judgments</a></div>` : ""}</div>` : ""}
+      <div class="row" style="margin-top:6px">${!status.llm.configured ? `<a href="#/settings?tab=ai">Connect an AI model</a>` : ""}
+      ${u.is_platform_admin ? `<a href="#/admin?tab=ai">AI settings</a><a href="#/admin?tab=import">Import judgments</a>` : ""}</div></div>` : ""}
 
     <div class="grid grid-3">
       <div class="card"><div class="muted">Open matters</div><div class="stat">${d.counts.open_matters}</div></div>

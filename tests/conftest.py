@@ -26,7 +26,7 @@ BACKEND = os.environ.get("LAWPILOT_TEST_BACKEND", "sqlite")
 
 def _base_cfg(data_dir, **kw):
     return Config.from_env(data_dir=data_dir, llm_provider="none", smtp_host="", dev_mode=True,
-                           embedding_provider="local", **kw)
+                           embedding_provider="local", signup_rate_limit=0, **kw)
 
 
 @pytest.fixture(scope="session")
@@ -98,8 +98,12 @@ class Client:
         self.c = app.test_client()
         self.user = None
         if email:
-            r = self.post("/api/auth/register", {"email": email, "name": name, "password": PASSWORD})
+            # Sign-up emails a temporary password and a set-password link (returned directly in dev mode).
+            r = self.post("/api/auth/register", {"email": email, "name": name})
             assert r.status_code == 201, r.json
+            token = r.json["dev_set_password_link"].split("token=")[1].split("&")[0]
+            r = self.post("/api/auth/reset-password", {"token": token, "password": PASSWORD})
+            assert r.status_code == 200, r.json
             self.user = r.json["user"]
 
     def get(self, path):

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import os
-import re
 from pathlib import Path
 
 from flask import Blueprint, g, jsonify, request, send_file

@@ -206,7 +206,7 @@ Rules:
 def assist():
     client = llm()
     if not client:
-        raise ApiError("AI drafting assistance needs an LLM API key configured on the server.", 503)
+        raise ApiError("Connect your own AI model in Settings → AI models to use drafting assistance.", 400)
     data = body()
     need(data, "instruction")
     parts = [f"INSTRUCTION:\n{data['instruction'][:3000]}"]

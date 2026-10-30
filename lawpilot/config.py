@@ -37,6 +37,7 @@ class Config:
     secure_cookies: bool = False
     session_days: int = 14
     allow_registration: bool = True
+    signup_rate_limit: int = 10     # new accounts per IP address per hour (0 = no limit)
     admin_emails: tuple = ()
     base_url: str = "http://127.0.0.1:5000"
     max_upload_mb: int = 25
@@ -45,13 +46,18 @@ class Config:
     seed_summaries: bool = False    # load the 66 starter editorial summaries on first run
 
     # LLM
-    llm_provider: str = ""          # anthropic | openai | openrouter | groq | none
+    llm_provider: str = ""          # server key: anthropic | gemini | openai | mistral | deepseek | groq | openrouter | none
     llm_model: str = ""
+    # Who may fall back to the server's own key when they have not connected one:
+    # "admins" (platform admins only, the default), "everyone", or "nobody".
+    shared_key_policy: str = "admins"
     anthropic_api_key: str = ""
     openai_api_key: str = ""
     openrouter_api_key: str = ""
     groq_api_key: str = ""
     gemini_api_key: str = ""
+    mistral_api_key: str = ""
+    deepseek_api_key: str = ""
 
     # Embeddings
     embedding_provider: str = "local"   # local | voyage | openai
@@ -66,6 +72,12 @@ class Config:
 
     # External corpus
     kanoon_api_token: str = ""
+
+    # Monitoring (optional; nothing is sent unless a DSN is set)
+    sentry_dsn: str = ""
+    sentry_environment: str = ""
+    sentry_traces_sample_rate: float = 0.0
+    release: str = ""
 
     @property
     def db_path(self) -> Path:
@@ -89,6 +101,7 @@ class Config:
         cfg.secure_cookies = _bool("LAWPILOT_SECURE_COOKIES", False)
         cfg.session_days = int(e("LAWPILOT_SESSION_DAYS", "14"))
         cfg.allow_registration = _bool("LAWPILOT_ALLOW_REGISTRATION", True)
+        cfg.signup_rate_limit = int(e("LAWPILOT_SIGNUP_RATE_LIMIT", "10"))
         cfg.admin_emails = tuple(x.strip().lower() for x in e("LAWPILOT_ADMIN_EMAILS", "").split(",") if x.strip())
         cfg.base_url = e("LAWPILOT_BASE_URL", "http://127.0.0.1:5000").rstrip("/")
         cfg.max_upload_mb = int(e("LAWPILOT_MAX_UPLOAD_MB", "25"))
@@ -104,6 +117,9 @@ class Config:
         cfg.openrouter_api_key = e("OPENROUTER_API_KEY", "")
         cfg.groq_api_key = e("GROQ_API_KEY", "")
         cfg.gemini_api_key = e("GEMINI_API_KEY", "")
+        cfg.mistral_api_key = e("MISTRAL_API_KEY", "")
+        cfg.deepseek_api_key = e("DEEPSEEK_API_KEY", "")
+        cfg.shared_key_policy = e("LAWPILOT_SHARED_KEY_POLICY", "admins").strip().lower()
         cfg.llm_provider = e("LLM_PROVIDER", "").strip().lower()
         cfg.llm_model = e("LLM_MODEL", "").strip()
 
@@ -117,6 +133,15 @@ class Config:
         cfg.smtp_from = e("SMTP_FROM", cfg.smtp_user)
 
         cfg.kanoon_api_token = e("KANOON_API_TOKEN", "")
+
+        cfg.sentry_dsn = e("SENTRY_DSN", "").strip()
+        cfg.sentry_environment = e("SENTRY_ENVIRONMENT", "") or e("VERCEL_ENV", "") or (
+            "development" if cfg.dev_mode else "production")
+        try:
+            cfg.sentry_traces_sample_rate = float(e("SENTRY_TRACES_SAMPLE_RATE", "0") or 0)
+        except ValueError:
+            cfg.sentry_traces_sample_rate = 0.0
+        cfg.release = e("VERCEL_GIT_COMMIT_SHA", "")[:12] or e("LAWPILOT_RELEASE", "")
 
         for k, v in overrides.items():
             setattr(cfg, k, v)

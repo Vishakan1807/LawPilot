@@ -37,9 +37,45 @@ async function api(method, path, data) {
       State.user = null;
       navigate("#/login");
     }
+    if (res.status === 403 && payload && payload.code === "password_change_required") {
+      if (State.user) State.user.must_change_password = true;
+      navigate("#/set-password");
+    }
     throw new ApiError((payload && payload.error) || `Request failed (${res.status})`, res.status);
   }
   return payload;
+}
+
+/* Streaming POST: the server sends one JSON event per line while it works (AI answers as they are written).
+   onEvent(event) is called for each; resolves when the stream ends. Pass an AbortSignal to stop early. */
+async function apiStream(path, data, onEvent, signal) {
+  let res;
+  try {
+    res = await fetch(path, { method: "POST", credentials: "same-origin", signal, body: JSON.stringify(data || {}),
+      headers: { "X-Requested-With": "LawPilot", "Content-Type": "application/json" } });
+  } catch (e) {
+    if (e.name === "AbortError") throw e;
+    throw new ApiError("Cannot reach the server. Check your connection.", 0);
+  }
+  if (!res.ok) {
+    const type = res.headers.get("Content-Type") || "";
+    const payload = type.includes("application/json") ? await res.json() : null;
+    if (res.status === 401) { State.user = null; navigate("#/login"); }
+    if (res.status === 403 && payload && payload.code === "password_change_required") navigate("#/set-password");
+    throw new ApiError((payload && payload.error) || `Request failed (${res.status})`, res.status);
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  const flush = line => { if (line.trim()) onEvent(JSON.parse(line)); };
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let nl;
+    while ((nl = buffer.indexOf("\n")) >= 0) { flush(buffer.slice(0, nl)); buffer = buffer.slice(nl + 1); }
+  }
+  flush(buffer + decoder.decode());
 }
 
 /* ── Feedback ──────────────────────────────────────────── */
@@ -328,3 +364,35 @@ new MutationObserver(records => {
     });
   }
 }).observe(document.documentElement, { childList: true, subtree: true });
+
+/* ── Browser error reporting ───────────────────────────────
+   Unexpected JavaScript errors are sent to the server (and Sentry, if configured) so they can be
+   fixed. Only the error and the page route are sent, never page content. At most 5 per page load. */
+(function () {
+  let sent = 0;
+  const seen = new Set();
+  function report(message, source, line, stack) {
+    if (sent >= 5 || !message) return;
+    const key = `${message}|${source}|${line}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    sent += 1;
+    try {
+      fetch("/api/client-errors", {
+        method: "POST", credentials: "same-origin", keepalive: true,
+        headers: { "X-Requested-With": "LawPilot", "Content-Type": "application/json" },
+        body: JSON.stringify({ message: String(message).slice(0, 300), source: String(source || "").split("?")[0],
+          line: line || null, stack: String(stack || "").slice(0, 2000), path: (location.hash || "#/").split("?")[0] }),
+      }).catch(() => {});
+    } catch (e) { /* reporting must never cause another error */ }
+  }
+  window.addEventListener("error", e => {
+    if (!e.message) return;                       // resource load errors (images etc.) carry no message
+    report(e.message, e.filename, e.lineno, e.error && e.error.stack);
+  });
+  window.addEventListener("unhandledrejection", e => {
+    const r = e.reason;
+    if (r && (r.name === "AbortError" || r instanceof ApiError)) return;   // expected: already shown to the user
+    report(r && r.message ? r.message : String(r), "", null, r && r.stack);
+  });
+})();

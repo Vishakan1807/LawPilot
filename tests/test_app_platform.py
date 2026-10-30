@@ -129,7 +129,7 @@ def test_sci_import_is_incremental_and_searchable(make_client, admin, app, monke
     top = s["evidence"][0]
     assert top["title"].startswith("Hari Prakash Shukla") and top["court_level"] == "supreme"
     assert top["citation"] == "[2023] 10 S.C.R. 1001" and top["kind"] == "judgment"
-    hit = c.get(f"/api/corpus/search?citation=2023 INSC 600").json
+    hit = c.get("/api/corpus/search?citation=2023 INSC 600").json
     assert hit["total"] == 1
 
     runs = admin.get("/api/admin/imports").json["items"]

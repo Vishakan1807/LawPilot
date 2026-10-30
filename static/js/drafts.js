@@ -135,7 +135,7 @@ Pages.draft = async function (id, query) {
   const aiEl = $("#ai");
   if (!State.status) State.status = await api("GET", "/api/system/status");
   if (!State.status.llm.configured) {
-    aiEl.innerHTML = `<div class="banner info">AI assistance needs an LLM API key configured on the server.</div>`;
+    aiEl.innerHTML = `<div class="banner info">AI drafting help needs an AI model. <a href="#/settings?tab=ai">Connect your own model</a> (Gemini and Groq have free tiers).</div>`;
     return;
   }
   const sessions = (await api("GET", `/api/research?limit=50${d.matter_id ? "&matter_id=" + d.matter_id : ""}`)).items;

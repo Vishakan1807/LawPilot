@@ -4,13 +4,14 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 
-from flask import Blueprint, g, jsonify, request
+from flask import Blueprint, Response, current_app, g, jsonify, request, stream_with_context
 
-from lawpilot import activity, assistant
+from lawpilot import activity, ai_access, assistant
 from lawpilot.auth import ApiError, load_matter, require_perm
 from lawpilot.db import get_db, new_id, now, query_all, query_one
 from lawpilot.extract import ExtractionError, extract
 from lawpilot.ingestion import delete_source, ingest
+from lawpilot.llm import LLMError
 from lawpilot.routes import body, cfg, llm, need
 
 bp = Blueprint("ai", __name__, url_prefix="/api/ai")
@@ -187,22 +188,30 @@ def delete_file(chat_id, source_id):
 
 
 # ── Messages ───────────────────────────────────────────────────────────────
+# Two ways to get a reply: JSON (whole reply at once) and a stream of newline-delimited JSON
+# events, so the browser shows the answer while the model is still writing it:
+#   {"type": "user_message", "message": {...}}     the saved question (new messages only)
+#   {"type": "sources", "citations": [...]}        what was found, before any text
+#   {"type": "delta", "text": "..."}               the next piece of the answer
+#   {"type": "done", "message": {...}, "chat": {}} the saved reply, with citation checks
+#   {"type": "error", "error": "..."}              something failed; nothing more follows
 
 def _history(chat_id: str) -> list:
     return query_all("SELECT id, role, content FROM ai_messages WHERE chat_id = ? ORDER BY created_at", (chat_id,))
 
 
-def _respond(chat: dict, question: str, attachment_ids: list, history: list) -> dict:
-    files = _chat_files(chat["id"])
-    ready = [f for f in files if f["status"] == "ready"]
+def _plan(chat: dict, question: str, attachment_ids: list, history: list, client):
+    ready = [f for f in _chat_files(chat["id"]) if f["status"] == "ready"]
     by_id = {f["id"]: f for f in ready}
-    attachments = [by_id[a] for a in attachment_ids if a in by_id]
-    result = assistant.answer(
-        get_db(), cfg(), llm(), question=question, history=history, files=ready, attachments=attachments,
-        use_library=bool(chat["use_library"]), matter=_linked_matter(chat), chat_id=chat["id"],
-        language=(g.user.get("prefs") or {}).get("language", "en"))
-    extra = {k: result.get(k) for k in ("mode", "query", "retrieval", "notes", "verification", "cited", "error")
-             if result.get(k) is not None}
+    return assistant.prepare(
+        get_db(), cfg(), client, question=question, history=history, files=ready,
+        attachments=[by_id[a] for a in attachment_ids if a in by_id], use_library=bool(chat["use_library"]),
+        matter=_linked_matter(chat), chat_id=chat["id"], language=(g.user.get("prefs") or {}).get("language", "en"))
+
+
+def _save_reply(chat: dict, result: dict) -> dict:
+    extra = {k: result.get(k) for k in ("mode", "query", "retrieval", "notes", "verification", "cited", "error",
+                                        "stopped") if result.get(k) is not None}
     msg = {"id": new_id(), "chat_id": chat["id"], "role": "assistant", "content": result["content"],
            "citations": assistant.public_sources(result["sources"]), "attachments": [], "extra": extra,
            "model": result.get("model"), "created_at": _ts()}
@@ -216,9 +225,66 @@ def _respond(chat: dict, question: str, attachment_ids: list, history: list) -> 
     return msg
 
 
-@bp.post("/chats/<chat_id>/messages")
-@require_perm("research.run")
-def send_message(chat_id):
+def _respond(chat: dict, question: str, attachment_ids: list, history: list) -> dict:
+    client = llm()
+    result = assistant.generate(_plan(chat, question, attachment_ids, history, client), client)
+    return _save_reply(chat, result)
+
+
+def _event(obj: dict) -> str:
+    return json.dumps(obj, default=str) + "\n"
+
+
+def _stream(chat: dict, question: str, attachment_ids: list, history: list, head: list):
+    """Generator behind the streaming endpoints. Runs inside the request context (stream_with_context)."""
+    client = llm()
+    for e in head:
+        yield _event(e)
+    try:
+        plan = _plan(chat, question, attachment_ids, history, client)
+    except Exception:
+        current_app.logger.exception("AI mode: preparing a reply failed")
+        yield _event({"type": "error", "error": "Something went wrong while searching. Please try again."})
+        return
+    yield _event({"type": "sources", "citations": assistant.public_sources(plan.sources), "mode": plan.mode})
+
+    if plan.ready is not None:
+        result = plan.ready
+        yield _event({"type": "delta", "text": result["content"]})
+    else:
+        parts = []
+        pieces = client.stream(plan.system, plan.prompt, max_tokens=plan.max_tokens, effort="medium")
+        try:
+            for piece in pieces:
+                parts.append(piece)
+                yield _event({"type": "delta", "text": piece})
+            result = assistant.finish(plan, "".join(parts), client.label)
+        except LLMError as exc:
+            result = assistant.failed(plan, exc, "".join(parts))
+        except GeneratorExit:
+            # The user pressed Stop (or closed the tab): keep what was written so far.
+            pieces.close()
+            if "".join(parts).strip():
+                result = assistant.finish(plan, "".join(parts), client.label)
+                result["stopped"] = True
+                _save_reply(chat, result)
+            ai_access.record_outcome(get_db(), client)
+            raise
+        except Exception:
+            current_app.logger.exception("AI mode: streaming failed")
+            result = assistant.failed(plan, LLMError("the answer could not be completed"), "".join(parts))
+    msg = _save_reply(chat, result)
+    ai_access.record_outcome(get_db(), client)
+    yield _event({"type": "done", "message": msg, "chat": _public_chat(_load_chat(chat["id"]))})
+
+
+def _streaming_response(gen) -> Response:
+    return Response(stream_with_context(gen), mimetype="application/x-ndjson",
+                    headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"})
+
+
+def _accept_question(chat_id: str):
+    """Validate and save the user's message. Returns (chat, question, attachment ids, history, saved message)."""
     chat = _load_chat(chat_id)
     data = body()
     need(data, "content")
@@ -229,7 +295,6 @@ def send_message(chat_id):
     files = {f["id"]: f for f in _chat_files(chat_id)}
     attachments = [{"id": a, "title": files[a]["title"]} for a in attachment_ids if a in files]
     history = _history(chat_id)
-
     db = get_db()
     user_msg = {"id": new_id(), "chat_id": chat_id, "role": "user", "content": question, "citations": [],
                 "attachments": attachments, "extra": {}, "model": None, "created_at": _ts()}
@@ -239,15 +304,27 @@ def send_message(chat_id):
     if not history and chat["title"] in ("New chat", ""):
         db.execute("UPDATE ai_chats SET title = ? WHERE id = ?", (assistant.chat_title(question), chat_id))
     db.commit()
-
-    reply = _respond(chat, question, [a["id"] for a in attachments], history)
     activity.log("ai.message", f"AI mode: {question[:120]}", "ai_chat", chat_id)
+    return chat, question, [a["id"] for a in attachments], history, user_msg
+
+
+@bp.post("/chats/<chat_id>/messages")
+@require_perm("research.run")
+def send_message(chat_id):
+    chat, question, attachment_ids, history, user_msg = _accept_question(chat_id)
+    reply = _respond(chat, question, attachment_ids, history)
     return jsonify(user_message=user_msg, message=reply, chat=_public_chat(_load_chat(chat_id)))
 
 
-@bp.post("/chats/<chat_id>/regenerate")
+@bp.post("/chats/<chat_id>/messages/stream")
 @require_perm("research.run")
-def regenerate(chat_id):
+def send_message_stream(chat_id):
+    chat, question, attachment_ids, history, user_msg = _accept_question(chat_id)
+    return _streaming_response(_stream(chat, question, attachment_ids, history,
+                                       [{"type": "user_message", "message": user_msg}]))
+
+
+def _prepare_regenerate(chat_id: str):
     chat = _load_chat(chat_id)
     history = _history(chat_id)
     if history and history[-1]["role"] == "assistant":
@@ -258,5 +335,19 @@ def regenerate(chat_id):
     if not history or history[-1]["role"] != "user":
         raise ApiError("There is no question to answer again.")
     last = query_one("SELECT content, attachments FROM ai_messages WHERE id = ?", (history[-1]["id"],))
-    reply = _respond(chat, last["content"], [a["id"] for a in last["attachments"] or []], history[:-1])
+    return chat, last["content"], [a["id"] for a in last["attachments"] or []], history[:-1]
+
+
+@bp.post("/chats/<chat_id>/regenerate")
+@require_perm("research.run")
+def regenerate(chat_id):
+    chat, question, attachment_ids, history = _prepare_regenerate(chat_id)
+    reply = _respond(chat, question, attachment_ids, history)
     return jsonify(message=reply, chat=_public_chat(_load_chat(chat_id)))
+
+
+@bp.post("/chats/<chat_id>/regenerate/stream")
+@require_perm("research.run")
+def regenerate_stream(chat_id):
+    chat, question, attachment_ids, history = _prepare_regenerate(chat_id)
+    return _streaming_response(_stream(chat, question, attachment_ids, history, []))

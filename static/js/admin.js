@@ -272,22 +272,35 @@ async function adminDeletions(el) {
 
 /* ── AI settings ───────────────────────────────────────── */
 const KEY_FIELD = { anthropic: "anthropic_api_key", gemini: "gemini_api_key", openai: "openai_api_key",
-  openrouter: "openrouter_api_key", groq: "groq_api_key" };
+  openrouter: "openrouter_api_key", groq: "groq_api_key", mistral: "mistral_api_key", deepseek: "deepseek_api_key" };
 const KEY_HELP = {
   anthropic: "Create a key at console.anthropic.com (paid, pay-as-you-go).",
   gemini: "Create a free key at aistudio.google.com. On Google's free tier, prompts may be used to improve Google's products, so avoid sending confidential client documents through it.",
   openai: "Create a key at platform.openai.com.",
   openrouter: "Create a key at openrouter.ai (gives access to many models).",
   groq: "Create a key at console.groq.com (fast, has a free tier).",
+  mistral: "Create a key at console.mistral.ai.",
+  deepseek: "Create a key at platform.deepseek.com (very low cost).",
+};
+const SHARED_POLICY = {
+  admins: "Platform administrators only (recommended): everyone else connects their own key",
+  everyone: "Everyone without their own key (all usage is billed to this server key)",
+  nobody: "Nobody: every account, including administrators, must connect its own key",
 };
 
 async function adminAI(el) {
   const v = await api("GET", "/api/admin/ai");
   const current = v.llm_provider && v.llm_provider !== "none" ? v.llm_provider : (v.active ? v.active.provider : "anthropic");
   el.innerHTML = `
-    <div class="banner ${v.active ? "ok" : "warn"}"><strong>${v.active ? "AI answers are on" : "AI answers are off"}</strong>
-      ${v.active ? `Using ${esc(v.active.provider)} / ${esc(v.active.model)}.` : "Research shows ranked passages only until you add an API key below, test it, and save."}</div>
-    <div class="grid grid-2"><div class="card"><h2>Answer model</h2><form id="aif">
+    <div class="banner ${v.active ? "ok" : "warn"}"><strong>${v.active ? "Server model is set up" : "No server model"}</strong>
+      ${v.active ? `Server key: ${esc(v.active.provider)} / ${esc(v.active.model)}.` : "That is fine: users connect their own keys in Settings → AI models."}</div>
+    <div class="card"><h2>Who may use the server's key?</h2>
+      <p class="muted">Every user can connect their own key (Gemini, Claude, OpenAI, Mistral, DeepSeek, Groq, OpenRouter) in
+        <a href="#/settings?tab=ai">Settings → AI models</a>, so usage is billed to them and your key's quota is not shared.
+        Choose who falls back to the server key below when they have not connected one.</p>
+      <form id="polf" class="row"><select name="shared_key_policy" style="flex:1;min-width:260px">${options(SHARED_POLICY, v.shared_key_policy || "admins")}</select>
+        <button class="btn primary">Save policy</button></form></div>
+    <div class="grid grid-2"><div class="card"><h2>Server answer model</h2><form id="aif">
       <div class="field"><label>Provider</label><select name="llm_provider" id="prov">${options(Object.fromEntries(v.providers.map(p => [p.key, p.label])), current)}</select></div>
       <div class="field"><label>API key</label><input type="password" id="apikey" autocomplete="off" placeholder="Paste a new key to set or replace it">
         <div class="hint" id="keystate"></div><div class="hint" id="keyhelp"></div></div>
@@ -346,6 +359,15 @@ async function adminAI(el) {
   $("#clearkey").addEventListener("click", async () => {
     if (!(await confirmDialog(`Remove the stored ${prov.value} key?`, { danger: true, okLabel: "Remove" }))) return;
     try { await api("POST", "/api/admin/ai", { keys: { [KEY_FIELD[prov.value]]: "" } }); State.status = null; adminAI(el); } catch (e) { fail(e); }
+  });
+  $("#polf").addEventListener("submit", e => {
+    e.preventDefault();
+    withBusy($("#polf .primary"), async () => {
+      await api("POST", "/api/admin/ai", { shared_key_policy: formObject(e.target).shared_key_policy });
+      State.status = null;
+      toast("Shared-key policy saved.");
+      adminAI(el);
+    });
   });
   $("#ef").addEventListener("submit", e => {
     e.preventDefault();

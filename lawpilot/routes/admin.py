@@ -523,7 +523,7 @@ def process_deletion(req_id):
 def _ai_view():
     from lawpilot import settings
     from lawpilot.llm import DEFAULT_MODELS, PROVIDER_LABELS
-    from lawpilot.routes import llm
+    from lawpilot.routes import server_llm as llm
     client = llm()
     return {**settings.public_view(get_db(), current_app.config["LP"]),
             "providers": [{"key": k, "label": v, "default_model": DEFAULT_MODELS[k]} for k, v in PROVIDER_LABELS.items()],
@@ -554,6 +554,10 @@ def save_ai_settings():
         if data["embedding_provider"] not in ("local", "voyage", "openai"):
             raise ApiError("Unknown embedding provider.")
         updates["embedding_provider"] = data["embedding_provider"]
+    if "shared_key_policy" in data:
+        if data["shared_key_policy"] not in settings.SHARED_KEY_POLICIES:
+            raise ApiError("Unknown shared-key policy.")
+        updates["shared_key_policy"] = data["shared_key_policy"]
     for k, v in (data.get("keys") or {}).items():
         if k in settings.SECRET_FIELDS and v is not None:
             updates[k] = v
@@ -667,7 +671,7 @@ def starter_summaries():
 @bp.get("/overview")
 @platform_admin_required
 def overview():
-    from lawpilot.routes import llm
+    from lawpilot.routes import server_llm as llm
     db = get_db()
     one = lambda sql, p=(): db.execute(sql, p).fetchone()[0]  # noqa: E731
     from datetime import datetime, timedelta, timezone

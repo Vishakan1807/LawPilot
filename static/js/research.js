@@ -2,9 +2,9 @@
 "use strict";
 
 function aiOffHint() {
-  return State.user && State.user.is_platform_admin
-    ? `<div><strong>To get written answers:</strong> open <a href="#/admin?tab=ai">Corpus admin → AI settings</a>, paste an API key (Google Gemini has a free tier), click Test, then Save.</div>`
-    : `<div>Written AI answers are switched off on this server. Ask your LawPilot administrator to add an AI key.</div>`;
+  return `<div><strong>To get written answers:</strong> <a href="#/settings?tab=ai">connect your own AI model</a>
+    (Settings → AI models). Paste a key from Gemini, Claude, OpenAI, Mistral, DeepSeek, Groq or OpenRouter;
+    Gemini and Groq have free tiers.</div>`;
 }
 
 function corpusNotice(status) {

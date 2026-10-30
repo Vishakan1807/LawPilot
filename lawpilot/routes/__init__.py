@@ -7,10 +7,12 @@ from lawpilot.auth import ApiError
 
 
 def register_blueprints(app) -> None:
-    from lawpilot.routes import (account, admin, ai, auth_routes, dashboard, drafts, firms, matters, research,
-                                 sources)
-    for mod in (auth_routes, account, firms, matters, research, sources, drafts, dashboard, admin, ai):
+    from lawpilot.routes import (account, activity_routes, admin, ai, ai_models, auth_routes, dashboard, drafts,
+                                 firms, matters, research, sources)
+    for mod in (auth_routes, account, firms, matters, research, sources, drafts, dashboard, admin, ai, ai_models,
+                activity_routes):
         app.register_blueprint(mod.bp)
+    app.after_request(_record_llm_outcome)
 
 
 def body() -> dict:
@@ -33,8 +35,8 @@ def cfg():
     return g.lp_cfg
 
 
-def llm():
-    """The configured LLM client, rebuilt whenever admins change AI settings."""
+def server_llm():
+    """The server's own model (admin AI settings), rebuilt whenever those settings change."""
     if "lawpilot_llm" in current_app.extensions:        # explicit override (tests)
         return current_app.extensions["lawpilot_llm"]
     from lawpilot import settings
@@ -46,6 +48,36 @@ def llm():
         cached = (version, build_llm(cfg()))
         current_app.extensions["lawpilot_llm_cache"] = cached
     return cached[1]
+
+
+def llm_resolution():
+    """How the signed-in user gets a model: their own key, the server's, or none (cached per request)."""
+    if "lp_llm" not in g:
+        from lawpilot import ai_access
+        from lawpilot.db import get_db
+        if "lawpilot_llm" in current_app.extensions:    # tests inject one client for everyone
+            client = current_app.extensions["lawpilot_llm"]
+            g.lp_llm = ai_access.Resolution(client, "server" if client else "none")
+        else:
+            g.lp_llm = ai_access.resolve(get_db(), cfg(), g.get("user"), server_llm())
+    return g.lp_llm
+
+
+def llm():
+    """The model that answers for the signed-in user (None = passages only)."""
+    return llm_resolution().client
+
+
+def _record_llm_outcome(response):
+    res = g.get("lp_llm")
+    if res is not None and res.client is not None:
+        try:
+            from lawpilot import ai_access
+            from lawpilot.db import get_db
+            ai_access.record_outcome(get_db(), res.client)
+        except Exception:                               # bookkeeping must never break a response
+            current_app.logger.exception("could not record AI key usage")
+    return response
 
 
 def page_args(default: int = 50, maximum: int = 200):
