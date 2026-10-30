@@ -78,6 +78,77 @@ async function apiStream(path, data, onEvent, signal) {
   flush(buffer + decoder.decode());
 }
 
+/* ── Picker: a themed, keyboard-accessible dropdown ─────────
+   openPicker(anchor, { title, items: [{ value, label, sub, icon, badge, active }], footer, onSelect })
+   Opens above the anchor when there is room (composer bars sit at the bottom of the screen). */
+const PICKER_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const PICKER_CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 14l5-5 5 5"/></svg>';
+
+function closePickers() {
+  $$(".lp-pop").forEach(p => { if (p._close) p._close(); else p.remove(); });
+}
+
+function openPicker(anchor, { title = "", items = [], footer = "", onSelect }) {
+  const wasOpen = anchor.getAttribute("aria-expanded") === "true";
+  closePickers();
+  if (wasOpen) return;
+  const pop = document.createElement("div");
+  pop.className = "lp-pop";
+  pop.setAttribute("role", "listbox");
+  if (title) pop.setAttribute("aria-label", title);
+  pop.innerHTML = `${title ? `<div class="lp-pop-title">${esc(title)}</div>` : ""}
+    <div class="lp-pop-list">${items.map((it, i) => `<button type="button" role="option" class="lp-pop-item ${it.active ? "active" : ""}"
+        aria-selected="${it.active ? "true" : "false"}" data-i="${i}">
+        ${it.icon || ""}<span class="lp-pop-text"><strong>${esc(it.label)}</strong>${it.sub ? `<small>${esc(it.sub)}</small>` : ""}</span>
+        ${it.badge || ""}<span class="lp-pop-check">${it.active ? PICKER_CHECK : ""}</span></button>`).join("")}</div>
+    ${footer ? `<div class="lp-pop-foot">${footer}</div>` : ""}`;
+  document.body.appendChild(pop);
+
+  const r = anchor.getBoundingClientRect();
+  const w = Math.min(Math.max(r.width, 360), window.innerWidth - 16);
+  pop.style.width = w + "px";
+  pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
+  const h = pop.offsetHeight;
+  const above = r.top - 8 >= h || r.top > window.innerHeight - r.bottom;
+  pop.style.top = (above ? Math.max(8, r.top - h - 8) : Math.min(window.innerHeight - h - 8, r.bottom + 8)) + "px";
+  pop.classList.add(above ? "up" : "down");
+  anchor.setAttribute("aria-expanded", "true");
+
+  const buttons = $$(".lp-pop-item", pop);
+  const close = (focusAnchor = false) => {
+    pop.remove();
+    anchor.setAttribute("aria-expanded", "false");
+    document.removeEventListener("mousedown", outside, true);
+    window.removeEventListener("resize", closeNow);
+    window.removeEventListener("scroll", closeNow, true);
+    if (focusAnchor) anchor.focus();
+  };
+  const closeNow = () => close(false);
+  const outside = e => { if (!pop.contains(e.target) && !anchor.contains(e.target)) close(false); };
+  pop._close = closeNow;
+  setTimeout(() => {
+    document.addEventListener("mousedown", outside, true);
+    window.addEventListener("resize", closeNow);
+    window.addEventListener("scroll", closeNow, true);
+  }, 0);
+  pop.addEventListener("click", e => {
+    const b = e.target.closest(".lp-pop-item");
+    if (!b) { if (e.target.closest("a")) close(false); return; }
+    const it = items[+b.dataset.i];
+    close(true);
+    if (!it.active && onSelect) onSelect(it);
+  });
+  pop.addEventListener("keydown", e => {
+    const i = buttons.indexOf(document.activeElement);
+    if (e.key === "ArrowDown") { e.preventDefault(); buttons[(i + 1) % buttons.length].focus(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); buttons[(i - 1 + buttons.length) % buttons.length].focus(); }
+    else if (e.key === "Home") { e.preventDefault(); buttons[0].focus(); }
+    else if (e.key === "End") { e.preventDefault(); buttons[buttons.length - 1].focus(); }
+    else if (e.key === "Escape" || e.key === "Tab") { e.preventDefault(); close(true); }
+  });
+  (buttons.find(b => b.classList.contains("active")) || buttons[0] || pop).focus();
+}
+
 /* ── Feedback ──────────────────────────────────────────── */
 function toast(message, bad = false) {
   let wrap = $(".toast-wrap");

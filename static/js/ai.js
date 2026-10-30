@@ -233,7 +233,7 @@ function aiLayout() {
           <div class="ai-tools">
             <button class="ai-icon-btn" id="ai-attach" type="button" title="Attach files (PDF, Word, text)" aria-label="Attach files">${AI_ICONS.clip}</button>
             <button class="ai-toggle" id="ai-lib" type="button" aria-pressed="true" title="Search LawPilot's library of Indian statutes and judgments">${AI_ICONS.scale}<span>Law library</span></button>
-            <select class="ai-matter" id="ai-matter" aria-label="Link a matter" hidden></select>
+            <span id="ai-matter-slot"></span>
             <span id="ai-model-slot"></span>
             <span class="spacer"></span>
             <button class="ai-send" id="ai-send" type="submit" aria-label="Send" disabled>${AI_ICONS.send}</button>
@@ -271,7 +271,6 @@ function wireAi() {
   $("#ai-attach").addEventListener("click", () => $("#ai-file").click());
   $("#ai-file").addEventListener("change", e => { uploadAiFiles(Array.from(e.target.files)); e.target.value = ""; });
   $("#ai-lib").addEventListener("click", () => updateChatSettings({ use_library: !currentSettings().use_library }));
-  $("#ai-matter").addEventListener("change", e => updateChatSettings({ matter_id: e.target.value }));
   $("#ai-files-btn").addEventListener("click", showAiFiles);
   $("#ai-drawer-open").addEventListener("click", () => $("#ai-root").classList.add("drawer"));
   $("#ai-drawer-close").addEventListener("click", closeAiDrawer);
@@ -586,22 +585,59 @@ function currentSettings() {
   return AI.draft;
 }
 
+function pickerButton(id, icon, label, sub, aria) {
+  return `<button type="button" class="lp-picker" id="${id}" aria-haspopup="listbox" aria-expanded="false" aria-label="${esc(aria)}">
+    ${icon}<span class="lp-picker-text"><strong>${esc(label)}</strong>${sub ? `<small>${esc(sub)}</small>` : ""}</span>
+    <span class="lp-picker-chev">${PICKER_CHEVRON}</span></button>`;
+}
+
 function renderModelSwitcher() {
   const slot = $("#ai-model-slot");
   if (!slot) return;
-  slot.innerHTML = AI.models ? aiModelSwitcherHtml(AI.models) : "";
-  const sel = $("#ai-model");
-  if (!sel) return;
-  sel.addEventListener("change", async () => {
-    try {
-      AI.models = sel.value === "__server"
-        ? await api("POST", "/api/account/ai/use-server")
-        : await api("POST", `/api/account/ai/${sel.value}/activate`);
-      State.status = null;
-      toast(`Answering with ${sel.options[sel.selectedIndex].text}.`);
-    } catch (e) { fail(e); }
-    renderModelSwitcher();
-  });
+  if (!AI.models) { slot.innerHTML = ""; return; }
+  const items = aiModelItems(AI.models);
+  if (!items.length) {
+    slot.innerHTML = `<a class="ai-toggle ai-connect" href="#/settings?tab=ai">Connect an AI model</a>`;
+    return;
+  }
+  const cur = items.find(i => i.active);
+  slot.innerHTML = cur ? pickerButton("ai-model", cur.icon, cur.label, cur.sub, `AI model: ${cur.label} ${cur.sub}`)
+    : pickerButton("ai-model", `<span class="aim-logo sm aim-server">?</span>`, "Choose a model", "", "Choose an AI model");
+  $("#ai-model").addEventListener("click", () => openPicker($("#ai-model"), {
+    title: "Answer with",
+    items,
+    footer: `<a href="#/settings?tab=ai">Manage AI models →</a>`,
+    onSelect: async it => {
+      try {
+        AI.models = it.value === "__server"
+          ? await api("POST", "/api/account/ai/use-server")
+          : await api("POST", `/api/account/ai/${it.value}/activate`);
+        State.status = null;
+        toast(`Answering with ${it.label} · ${it.sub}.`);
+      } catch (e) { fail(e); }
+      renderModelSwitcher();
+    },
+  }));
+}
+
+const MATTER_ICON = '<span class="lp-picker-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>';
+
+function renderMatterPicker() {
+  const slot = $("#ai-matter-slot");
+  const matters = AI.matters || [];
+  if (!slot) return;
+  if (!matters.length) { slot.innerHTML = ""; return; }
+  const s = currentSettings();
+  const linked = matters.find(m => m.id === s.matter_id);
+  slot.innerHTML = pickerButton("ai-matter", MATTER_ICON, linked ? linked.title : "No matter linked",
+    linked ? "Searching its documents" : "", "Link a matter");
+  $("#ai-matter").addEventListener("click", () => openPicker($("#ai-matter"), {
+    title: "Search a matter's documents too",
+    items: [{ value: "", label: "No matter linked", sub: "Your files and the library only", icon: MATTER_ICON, active: !linked },
+      ...matters.map(m => ({ value: m.id, label: m.title, sub: m.court || m.client_name || "", icon: MATTER_ICON,
+        active: !!linked && linked.id === m.id }))],
+    onSelect: it => updateChatSettings({ matter_id: it.value }),
+  }));
 }
 
 function renderComposerTools() {
@@ -610,13 +646,7 @@ function renderComposerTools() {
   const lib = $("#ai-lib");
   lib.setAttribute("aria-pressed", String(!!s.use_library));
   lib.classList.toggle("on", !!s.use_library);
-  const sel = $("#ai-matter");
-  const matters = AI.matters || [];
-  sel.hidden = !matters.length;
-  if (matters.length) {
-    sel.innerHTML = `<option value="">No matter linked</option>` + matters.map(m =>
-      `<option value="${esc(m.id)}" ${m.id === s.matter_id ? "selected" : ""}>${esc(m.title)}</option>`).join("");
-  }
+  renderMatterPicker();
 }
 
 async function updateChatSettings(change) {

@@ -180,10 +180,19 @@ async function aimModelDialog(p, k, done) {
   });
 }
 
-/* Compact switcher used inside AI mode: pick which connected model answers. */
-function aiModelSwitcherHtml(v) {
-  const opts = v.keys.map(k => `<option value="${esc(k.provider)}" ${k.is_active && v.active.source === "own" ? "selected" : ""}>${esc(k.provider_name)} · ${esc(k.model)}</option>`);
-  if (v.server.available) opts.push(`<option value="__server" ${v.active.source === "server" ? "selected" : ""}>Server model</option>`);
-  if (!opts.length) return `<a class="ai-toggle ai-connect" href="#/settings?tab=ai">Connect an AI model</a>`;
-  return `<select class="ai-matter ai-model-select" id="ai-model" aria-label="AI model">${opts.join("")}</select>`;
+/* Models the user can answer with, for the AI-mode picker. */
+function aiModelItems(v) {
+  const price = Object.fromEntries(v.providers.map(p => [p.key, p.pricing]));
+  const items = v.keys.map(k => ({
+    value: k.provider, label: k.provider_name, sub: k.model,
+    icon: `<span class="aim-logo sm aim-${esc(k.provider)}">${esc(AIM_INITIALS[k.provider] || k.provider_name[0])}</span>`,
+    badge: k.last_error ? badge("Needs attention", "bad")
+      : (price[k.provider] && price[k.provider] !== "paid") || String(k.model).endsWith(":free") ? badge("Free", "ok") : "",
+    active: k.is_active && v.active.source === "own",
+  }));
+  if (v.server.available) {
+    items.push({ value: "__server", label: "Server model", sub: v.active.source === "server" ? (v.active.model || "") : "Shared by your administrator",
+      icon: `<span class="aim-logo sm aim-server">${ADVOCATE_BANDS}</span>`, active: v.active.source === "server" });
+  }
+  return items;
 }
