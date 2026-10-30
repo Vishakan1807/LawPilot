@@ -68,7 +68,8 @@ class TrackedClient(LLMClient):
 
 def catalog() -> List[Dict]:
     return [{"key": p.key, "name": p.name, "label": p.label, "default_model": p.default_model,
-             "key_url": p.key_url, "key_prefix": p.key_prefix, "note": p.note} for p in PROVIDERS.values()]
+             "key_url": p.key_url, "key_prefix": p.key_prefix, "note": p.note, "pricing": p.pricing}
+            for p in PROVIDERS.values()]
 
 
 def _provider(provider: str):
@@ -89,6 +90,68 @@ def _clean_key(api_key: str) -> str:
 def _ping(client: LLMClient) -> str:
     """One tiny request: proves the key works and the model exists before anything is saved."""
     return client.complete(PING_SYSTEM, "ping", max_tokens=400, effort="low").text.strip()[:80]
+
+
+# Model ids that are not chat models (speech, images, embeddings, safety classifiers ...).
+NON_CHAT = ("whisper", "tts", "guard", "embed", "moderation", "audio", "image", "dall-e", "realtime", "transcribe",
+            "search", "vision", "playai", "orpheus", "imagen", "veo", "aqa", "computer-use", "codex", "rerank", "ocr")
+# Preferred replacements, best first, when the chosen model is not available to a key.
+PREFERRED = {
+    "groq": ("llama-3.3-70b", "llama-4-maverick", "gpt-oss-120b", "llama-4-scout", "kimi-k2", "qwen3", "gpt-oss-20b",
+             "llama-3.1-8b"),
+    "openrouter": ("llama-3.3-70b", "deepseek", "qwen", "gemma", "mistral", "llama"),
+    "gemini": ("gemini-2.5-flash", "gemini-flash-latest", "gemini-2.0-flash", "flash"),
+    "openai": ("gpt-4o-mini", "gpt-4.1-mini", "gpt-5-mini", "mini", "gpt-4o"),
+    "mistral": ("mistral-large-latest", "mistral-medium-latest", "mistral-small-latest"),
+    "deepseek": ("deepseek-chat",),
+    "anthropic": ("sonnet", "opus", "haiku"),
+}
+
+
+def candidate_models(provider: str, models: List[str], exclude=()) -> List[str]:
+    """Chat models from a key's model list, best replacement first. OpenRouter: free models only."""
+    chat = [m for m in models if m not in exclude and not any(x in m.lower() for x in NON_CHAT)]
+    if provider == "openrouter":
+        chat = [m for m in chat if m.endswith(":free")]
+    ranked, seen = [], set()
+    for pref in PREFERRED.get(provider, ()):
+        for m in chat:
+            if pref in m.lower() and m not in seen:
+                ranked.append(m)
+                seen.add(m)
+    return ranked + [m for m in chat if m not in seen]
+
+
+def _connect(provider: str, key: str, model: str, may_switch: bool) -> Dict:
+    """Ping the model; if the key cannot use it (retired model, no credit for paid OpenRouter models) and the
+    user did not pick it explicitly, find a model the key can use instead."""
+    try:
+        return {"reply": _ping(make_client(provider, key, model)), "model": model, "note": ""}
+    except LLMError as exc:
+        switchable = exc.kind == "model" or (exc.kind == "quota" and provider == "openrouter")
+        if not may_switch or not switchable:
+            raise
+        try:
+            available = list_models(provider, key)
+        except LLMError:
+            raise exc
+        tried = 0
+        for candidate in candidate_models(provider, available, exclude={model}):
+            if tried >= 4:
+                break
+            tried += 1
+            try:
+                reply = _ping(make_client(provider, key, candidate))
+            except LLMError as again:
+                if again.kind == "auth":
+                    raise again
+                continue
+            note = (f"“{model}” is not available to this key, so LawPilot chose “{candidate}”. "
+                    f"You can change it any time with “Change model”.")
+            return {"reply": reply, "model": candidate, "note": note}
+        if provider == "openrouter" and exc.kind == "quota":
+            raise LLMError(str(exc) + " No free model answered either; try again later.", exc.status, exc.kind)
+        raise
 
 
 # ── Reading ────────────────────────────────────────────────────────────────
@@ -157,8 +220,9 @@ def save_key(db, cfg, user_id: str, provider: str, api_key: str, model: str = ""
     """Validate a key with one tiny request, then store it encrypted. Raises LLMError if it does not work."""
     p = _provider(provider)
     key = _clean_key(api_key)
-    model = (model or "").strip() or p.default_model
-    reply = _ping(make_client(provider, key, model))
+    requested = (model or "").strip()
+    result = _connect(provider, key, requested or p.default_model, may_switch=requested in ("", p.default_model))
+    model = result["model"]
     ts = now()
     existing = _row(db, user_id, provider)
     enc = crypto.encrypt(cfg.secret_key, PURPOSE, key)
@@ -173,7 +237,7 @@ def save_key(db, cfg, user_id: str, provider: str, api_key: str, model: str = ""
                                   (user_id,)).fetchone():
         _set_active(db, user_id, provider)
     db.commit()
-    return {"reply": reply, "model": model}
+    return result
 
 
 def change_model(db, cfg, user_id: str, provider: str, model: str) -> Dict:

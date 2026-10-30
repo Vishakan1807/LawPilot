@@ -1,6 +1,19 @@
 /* Settings → AI models: connect your own provider keys and choose the model that answers. */
 "use strict";
 
+const AIM_PRICING = { free: ["Free tier", "ok"], free_models: ["Free models", "ok"], paid: ["Paid", ""] };
+
+/* Model picker: a real dropdown once the key's models are known (free OpenRouter models first). */
+function aimModelOptions(models, current) {
+  const free = models.filter(m => m.endsWith(":free"));
+  const rest = models.filter(m => !m.endsWith(":free"));
+  const opt = m => `<option value="${esc(m)}" ${m === current ? "selected" : ""}>${esc(m)}</option>`;
+  let html = current && !models.includes(current) ? `<option value="${esc(current)}" selected>${esc(current)}</option>` : "";
+  if (free.length) html += `<optgroup label="Free models">${free.map(opt).join("")}</optgroup>`;
+  if (rest.length) html += free.length ? `<optgroup label="Other models">${rest.map(opt).join("")}</optgroup>` : rest.map(opt).join("");
+  return html;
+}
+
 const AIM_INITIALS = { anthropic: "A", gemini: "G", openai: "O", mistral: "M", deepseek: "D", groq: "Q", openrouter: "R" };
 
 async function loadAiModels() {
@@ -73,7 +86,8 @@ function aimCard(p, k, active) {
   return `<div class="card aim-card ${isActive ? "active" : ""} ${k ? "connected" : ""}">
     <div class="aim-card-head">
       <span class="aim-logo aim-${esc(p.key)}">${esc(AIM_INITIALS[p.key] || p.name[0])}</span>
-      <div class="aim-card-title"><strong>${esc(p.name)}</strong><small class="muted">${esc(p.note || "")}</small></div>
+      <div class="aim-card-title"><strong>${esc(p.name)} ${badge(...(AIM_PRICING[p.pricing] || AIM_PRICING.paid))}</strong>
+        <small class="muted">${esc(p.note || "")}</small></div>
       ${status}
     </div>
     ${k ? `<dl class="aim-meta"><dt>Model</dt><dd><code>${esc(k.model)}</code></dd>
@@ -104,10 +118,10 @@ function aimConnectDialog(p, existing, done) {
       <div class="field"><label for="aim-key">API key</label>
         <input id="aim-key" name="api_key" type="password" autocomplete="off" spellcheck="false" required placeholder="Paste your ${esc(p.name)} API key"></div>
       <div class="field"><label for="aim-model">Model</label>
-        <div class="row"><input id="aim-model" name="model" list="aim-models" value="${esc(existing ? existing.model : p.default_model)}" style="flex:1">
+        <div class="row"><span id="aim-model-box" style="flex:1"><input id="aim-model" name="model" value="${esc(existing ? existing.model : p.default_model)}"></span>
           <button type="button" class="btn small" id="aim-load">Load my models</button></div>
-        <datalist id="aim-models"></datalist>
-        <div class="hint">Leave the default, or load the models your key can use and pick one.</div></div>
+        <div class="hint" id="aim-model-hint">Leave the default: if your key cannot use it, LawPilot picks one that works.
+          Or load the models your key can use and choose.</div></div>
       <div id="aim-out"></div>
       <div class="row end"><button type="button" class="btn" data-close>Cancel</button>
         <button class="btn primary" id="aim-save">Test &amp; save</button></div>
@@ -117,8 +131,12 @@ function aimConnectDialog(p, existing, done) {
     const key = $("#aim-key", el).value.trim();
     if (!key) { toast("Paste your API key first.", true); return; }
     const r = await api("POST", `/api/account/ai/${p.key}/models`, { api_key: key });
-    $("#aim-models", el).innerHTML = r.models.map(x => `<option value="${esc(x)}">`).join("");
-    toast(`${r.models.length} models available. Click the Model box to choose.`);
+    if (!r.models.length) { toast("This key did not list any models.", true); return; }
+    const current = $("#aim-model", el).value;
+    $("#aim-model-box", el).innerHTML = `<select id="aim-model" name="model">${aimModelOptions(r.models, current)}</select>`;
+    const free = r.models.filter(m => m.endsWith(":free")).length;
+    $("#aim-model-hint", el).textContent = `${r.models.length} models available to your key` +
+      (free ? `, ${free} of them free.` : ".");
   }));
   $("#aim-form", el).addEventListener("submit", e => {
     e.preventDefault();
@@ -127,7 +145,7 @@ function aimConnectDialog(p, existing, done) {
       try {
         const r = await api("PUT", `/api/account/ai/${p.key}`, { api_key: $("#aim-key", el).value, model: $("#aim-model", el).value, activate: true });
         m.close();
-        toast(`${p.name} connected · ${r.check.model}. It now answers your questions.`);
+        toast(r.check.note || `${p.name} connected · ${r.check.model}. It now answers your questions.`);
         State.status = null;
         done();
       } catch (err) {
@@ -144,8 +162,8 @@ async function aimModelDialog(p, k, done) {
   try { models = (await api("GET", `/api/account/ai/${p.key}/models`)).models; } catch (e) { /* free text below */ }
   $("#aim-ml", el).innerHTML = `<form id="aim-mf">
       <div class="field"><label for="aim-mi">Model</label>
-        <input id="aim-mi" list="aim-mlist" value="${esc(k.model)}" required>
-        <datalist id="aim-mlist">${models.map(x => `<option value="${esc(x)}">`).join("")}</datalist>
+        ${models.length ? `<select id="aim-mi" required>${aimModelOptions(models, k.model)}</select>`
+          : `<input id="aim-mi" value="${esc(k.model)}" required>`}
         <div class="hint">${models.length ? `${models.length} models available to your key.` : "Type the model id from your provider's documentation."}</div></div>
       <div id="aim-mo"></div>
       <div class="row end"><button type="button" class="btn" data-close>Cancel</button><button class="btn primary" id="aim-ms">Test &amp; save</button></div>

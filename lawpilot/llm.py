@@ -33,27 +33,40 @@ class Provider:
     key_prefix: str = ""        # typical key prefix, used only as a hint
     chat_url: str = ""          # OpenAI-compatible endpoint; empty for Anthropic
     note: str = ""
+    pricing: str = "paid"       # free | free_models | paid (shown on the provider card)
+    billing_hint: str = ""      # what to do when the key has no credit
 
 
 PROVIDERS = {p.key: p for p in [
     Provider("anthropic", "Anthropic", "Anthropic (Claude)", "claude-opus-5-5",
              "https://console.anthropic.com/settings/keys", "sk-ant-",
-             note="Strongest legal reasoning and long documents."),
+             note="Strongest legal reasoning and long documents. Pay as you go.",
+             billing_hint="Add credit at console.anthropic.com/settings/billing."),
     Provider("gemini", "Google Gemini", "Google Gemini (has a free tier)", "gemini-2.5-flash",
              "https://aistudio.google.com/apikey", "AIza",
              "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-             note="Free tier available; fast and inexpensive."),
+             note="Free tier available; fast and inexpensive.", pricing="free",
+             billing_hint="The free tier has a daily request limit; it resets every day, or enable billing in "
+                          "Google AI Studio."),
     Provider("openai", "OpenAI", "OpenAI", "gpt-4o-mini", "https://platform.openai.com/api-keys", "sk-",
-             "https://api.openai.com/v1/chat/completions"),
+             "https://api.openai.com/v1/chat/completions",
+             note="Paid: the API needs prepaid credit (separate from ChatGPT Plus).",
+             billing_hint="OpenAI's API has no free tier. Add credit at "
+                          "platform.openai.com/settings/organization/billing (a ChatGPT subscription does not cover it)."),
     Provider("mistral", "Mistral AI", "Mistral AI", "mistral-large-latest", "https://console.mistral.ai/api-keys", "",
-             "https://api.mistral.ai/v1/chat/completions", note="European provider."),
+             "https://api.mistral.ai/v1/chat/completions", note="European provider.",
+             billing_hint="Choose a plan or add credit at console.mistral.ai/billing."),
     Provider("deepseek", "DeepSeek", "DeepSeek", "deepseek-chat", "https://platform.deepseek.com/api_keys", "sk-",
-             "https://api.deepseek.com/v1/chat/completions", note="Very low cost."),
+             "https://api.deepseek.com/v1/chat/completions", note="Very low cost (paid).",
+             billing_hint="Top up your balance at platform.deepseek.com/top_up."),
     Provider("groq", "Groq", "Groq", "llama-3.3-70b-versatile", "https://console.groq.com/keys", "gsk_",
-             "https://api.groq.com/openai/v1/chat/completions", note="Very fast open models; free tier."),
-    Provider("openrouter", "OpenRouter", "OpenRouter", "meta-llama/llama-3.3-70b-instruct",
+             "https://api.groq.com/openai/v1/chat/completions", note="Very fast open models; free tier.",
+             pricing="free", billing_hint="The free tier has per-minute and per-day limits; wait a little and retry."),
+    Provider("openrouter", "OpenRouter", "OpenRouter", "meta-llama/llama-3.3-70b-instruct:free",
              "https://openrouter.ai/keys", "sk-or-", "https://openrouter.ai/api/v1/chat/completions",
-             note="One key for hundreds of models."),
+             note="One key for hundreds of models; models ending in “:free” cost nothing.", pricing="free_models",
+             billing_hint="Pick a free model (its name ends in “:free”), or add credit / raise this key's limit at "
+                          "openrouter.ai/settings/keys."),
 ]}
 
 # Derived views kept for existing callers.
@@ -66,7 +79,12 @@ _FALLBACK_MODELS = {"claude-opus-5-5", "claude-opus-5", "claude-fable-5-1", "cla
 
 
 class LLMError(Exception):
-    pass
+    """A provider call failed. `kind` lets callers react: auth | quota | rate_limit | model | other."""
+
+    def __init__(self, message: str, status: Optional[int] = None, kind: str = "other"):
+        super().__init__(message)
+        self.status = status
+        self.kind = kind
 
 
 @dataclass
@@ -118,14 +136,21 @@ class AnthropicClient(LLMClient):
 
     def _error(self, exc) -> "LLMError":
         a = self._anthropic
+        status = getattr(exc, "status_code", None)
+        message = str(getattr(exc, "message", "") or exc)
         if isinstance(exc, a.AuthenticationError):
-            return LLMError("Anthropic rejected the API key.")
+            return LLMError("Anthropic rejected this API key. Copy it again from console.anthropic.com.", status, "auth")
         if isinstance(exc, a.RateLimitError):
-            return LLMError("Anthropic rate limit reached. Try again shortly.")
+            return LLMError("Anthropic is rate-limiting this key. Wait a minute and try again.", status, "rate_limit")
+        if "credit balance" in message.lower() or status == 402:
+            return LLMError("No credit is available on this Anthropic account. " + PROVIDERS["anthropic"].billing_hint,
+                            status, "quota")
+        if isinstance(exc, a.NotFoundError):
+            return LLMError(f"Anthropic does not offer this model to your key ({message}).", status, "model")
         if isinstance(exc, a.BadRequestError):
-            return LLMError(f"Anthropic rejected the request: {exc.message}")
+            return LLMError(f"Anthropic rejected the request: {message}", status)
         if isinstance(exc, a.APIStatusError):
-            return LLMError(f"Anthropic API error ({exc.status_code}).")
+            return LLMError(f"Anthropic API error ({status}).", status)
         if isinstance(exc, a.APIConnectionError):
             return LLMError("Could not reach the Anthropic API.")
         return LLMError(f"Anthropic error: {exc}")
@@ -157,17 +182,53 @@ class AnthropicClient(LLMClient):
             raise LLMError("The model declined to answer this request.")
 
 
-def _http_error(provider: str, r) -> str:
-    """Readable error from an OpenAI-style error response."""
+def _error_detail(r) -> tuple:
+    """(message, code) from an OpenAI-style error body; tolerant of other shapes."""
     try:
         data = r.json()
-        data = data[0] if isinstance(data, list) and data else data
-        msg = (data.get("error") or {}).get("message") if isinstance(data, dict) else None
     except ValueError:
-        msg = None
-    hint = " Check the API key." if r.status_code in (400, 401, 403) and msg and "key" in msg.lower() else ""
-    body = (msg.rstrip(".") + ".") if msg else r.text[:300]
-    return f"{provider} returned HTTP {r.status_code}: {body}{hint}"
+        return (r.text or "")[:300].strip(), ""
+    data = data[0] if isinstance(data, list) and data else data
+    err = data.get("error") if isinstance(data, dict) else None
+    if isinstance(err, dict):
+        return str(err.get("message") or "").strip(), str(err.get("code") or err.get("type") or err.get("status") or "")
+    if isinstance(err, str):
+        return err, ""
+    return str(data.get("message") or "")[:300] if isinstance(data, dict) else "", ""
+
+
+def _http_failure(provider: str, r) -> LLMError:
+    """Turn a failed HTTP response into an error a lawyer can act on."""
+    status = r.status_code
+    msg, code = _error_detail(r)
+    p = PROVIDERS.get(provider)
+    name = p.name if p else provider
+    text = f"{msg} {code}".lower()
+    detail = f" (provider said: {msg.rstrip('.')}.)" if msg else ""
+    if status == 401 or any(k in text for k in ("invalid api key", "incorrect api key", "api key not valid",
+                                                 "invalid_api_key", "invalid x-api-key", "unauthorized")):
+        return LLMError(f"{name} rejected this API key. Copy it again from the provider's console and paste it "
+                        f"without spaces.{detail}", status, "auth")
+    if status == 402 or any(k in text for k in ("insufficient_quota", "insufficient credits", "credit balance",
+                                                 "key limit exceeded", "exceeded your current quota", "billing",
+                                                 "payment required", "insufficient balance")):
+        hint = p.billing_hint if p and p.billing_hint else "Check billing in your provider console."
+        return LLMError(f"No credit is available on this {name} key or account. {hint}{detail}", status, "quota")
+    if status == 404 or any(k in text for k in ("does not exist", "model_not_found", "not a valid model",
+                                                 "decommissioned", "no endpoints found", "unknown model",
+                                                 "is not found")):
+        return LLMError(f"{name} does not offer this model to your key.{detail}", status, "model")
+    if status == 429:
+        hint = p.billing_hint if p and p.pricing != "paid" else "Wait a minute and try again."
+        return LLMError(f"{name} is rate-limiting this key right now. {hint}{detail}", status, "rate_limit")
+    if status == 403:
+        return LLMError(f"{name} refused the request for this key.{detail}", status, "auth")
+    return LLMError(f"{name} returned an error (HTTP {status}).{detail}", status, "other")
+
+
+def _http_error(provider: str, r) -> str:
+    """Readable error text (kept for callers that only need the message)."""
+    return str(_http_failure(provider, r))
 
 
 class OpenAICompatibleClient(LLMClient):
@@ -185,27 +246,28 @@ class OpenAICompatibleClient(LLMClient):
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
         }
         headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
-        last = ""
+        last: Optional[LLMError] = None
         for attempt in range(3):
             try:
                 r = requests.post(self.url, json=body, headers=headers, timeout=180)
             except requests.RequestException as exc:
-                last = f"Could not reach {self.provider}: {exc}"
+                last = LLMError(f"Could not reach {self.provider}: {exc}")
                 time.sleep(1.5 * (attempt + 1))
                 continue
-            if r.status_code == 429 or r.status_code >= 500:
-                last = f"{self.provider} returned HTTP {r.status_code}"
-                time.sleep(2 * (attempt + 1))
-                continue
             if r.status_code != 200:
-                raise LLMError(_http_error(self.provider, r))
+                err = _http_failure(self.provider, r)
+                if err.kind == "rate_limit" or r.status_code >= 500:
+                    last = err                          # temporary: wait and retry
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise err
             data = r.json()
             try:
                 return LLMResult(text=data["choices"][0]["message"]["content"] or "",
                                  provider=self.provider, model=data.get("model", self.model))
             except (KeyError, IndexError) as exc:
                 raise LLMError(f"Unexpected response from {self.provider}") from exc
-        raise LLMError(last or f"{self.provider} request failed")
+        raise last or LLMError(f"{self.provider} request failed")
 
     def stream(self, system, user, max_tokens=4000, effort="medium"):
         """Server-sent events from /chat/completions with "stream": true. Retries only before any text."""
@@ -215,29 +277,26 @@ class OpenAICompatibleClient(LLMClient):
         }
         headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json",
                    "Accept": "text/event-stream"}
-        r, last = None, ""
+        r, last = None, None
         for attempt in range(3):
             try:
                 r = requests.post(self.url, json=body, headers=headers, timeout=(15, 180), stream=True)
             except requests.RequestException as exc:
-                last = f"Could not reach {self.provider}: {exc}"
+                r, last = None, LLMError(f"Could not reach {self.provider}: {exc}")
                 time.sleep(1.5 * (attempt + 1))
                 continue
-            if r.status_code == 429 or r.status_code >= 500:
-                last = f"{self.provider} returned HTTP {r.status_code}"
-                r.close()
+            if r.status_code == 200:
+                break
+            err = _http_failure(self.provider, r)
+            r.close()
+            r = None
+            if err.kind == "rate_limit" or err.status and err.status >= 500:
+                last = err                              # temporary: wait and retry
                 time.sleep(2 * (attempt + 1))
                 continue
-            break
+            raise err
         if r is None:
-            raise LLMError(last or f"{self.provider} request failed")
-        if r.status_code == 429 or r.status_code >= 500:
-            raise LLMError(last)                    # still failing after the retries
-        if r.status_code != 200:
-            try:
-                raise LLMError(_http_error(self.provider, r))
-            finally:
-                r.close()
+            raise last or LLMError(f"{self.provider} request failed")
         try:
             for raw in r.iter_lines(decode_unicode=True):
                 if not raw or not raw.startswith("data:"):
@@ -315,7 +374,7 @@ def list_models(provider: str, api_key: str) -> list:
     except requests.RequestException as exc:
         raise LLMError(f"Could not reach {provider}: {exc}") from exc
     if r.status_code != 200:
-        raise LLMError(_http_error(provider, r))
+        raise _http_failure(provider, r)
     ids = [m.get("id", "") for m in r.json().get("data", [])]
     return sorted(i.split("/", 1)[1] if provider == "gemini" and i.startswith("models/") else i for i in ids if i)
 

@@ -127,3 +127,98 @@ def test_admin_can_set_shared_key_policy(admin):
     r = admin.post("/api/admin/ai", {"shared_key_policy": "everyone"})
     assert r.status_code == 200 and r.json["shared_key_policy"] == "everyone"
     assert admin.post("/api/admin/ai", {"shared_key_policy": "chaos"}).status_code == 400
+
+
+# ── Provider errors and automatic model fallback ───────────────────────────
+
+class FakeResponse:
+    def __init__(self, status, body):
+        self.status_code, self._body, self.text = status, body, str(body)
+
+    def json(self):
+        return self._body
+
+    def close(self):
+        pass
+
+
+def test_provider_errors_are_classified_with_actionable_messages():
+    from lawpilot.llm import _http_failure
+    e = _http_failure("groq", FakeResponse(404, {"error": {"message": "The model `llama-3.3-70b-versatile` does not "
+                                                            "exist or you do not have access to it.",
+                                                 "code": "model_not_found"}}))
+    assert e.kind == "model" and "Groq does not offer this model" in str(e)
+    e = _http_failure("openai", FakeResponse(429, {"error": {"message": "You exceeded your current quota",
+                                                             "code": "insufficient_quota"}}))
+    assert e.kind == "quota" and "no free tier" in str(e)
+    e = _http_failure("openrouter", FakeResponse(403, {"error": {"message": "Key limit exceeded (weekly limit)."}}))
+    assert e.kind == "quota" and ":free" in str(e)
+    e = _http_failure("groq", FakeResponse(429, {"error": {"message": "Rate limit reached", "code": "rate_limit_exceeded"}}))
+    assert e.kind == "rate_limit"
+    e = _http_failure("mistral", FakeResponse(401, {"message": "Unauthorized"}))
+    assert e.kind == "auth" and "rejected this API key" in str(e)
+
+
+def test_no_credit_errors_are_not_retried(monkeypatch):
+    import lawpilot.llm as llm_mod
+    calls = []
+
+    def fake_post(*a, **k):
+        calls.append(1)
+        return FakeResponse(429, {"error": {"message": "quota", "code": "insufficient_quota"}})
+    monkeypatch.setattr(llm_mod.requests, "post", fake_post)
+    monkeypatch.setattr(llm_mod.time, "sleep", lambda s: None)
+    client = llm_mod.OpenAICompatibleClient("openai", "sk-test-123456789", "gpt-4o-mini")
+    with pytest.raises(LLMError) as info:
+        client.complete("s", "u")
+    assert info.value.kind == "quota" and len(calls) == 1
+    with pytest.raises(LLMError):
+        list(client.stream("s", "u"))
+    assert len(calls) == 2
+
+
+def test_candidate_models_skip_non_chat_and_prefer_good_ones():
+    groq = ["whisper-large-v3", "llama-guard-4-12b", "gpt-oss-20b", "llama-3.3-70b-versatile", "playai-tts"]
+    assert ai_access.candidate_models("groq", groq, exclude={"x"})[:2] == ["llama-3.3-70b-versatile", "gpt-oss-20b"]
+    router = ["openai/gpt-4o", "google/gemma-3-27b-it:free", "meta-llama/llama-3.3-70b-instruct:free"]
+    assert ai_access.candidate_models("openrouter", router) == ["meta-llama/llama-3.3-70b-instruct:free",
+                                                               "google/gemma-3-27b-it:free"]
+
+
+def _model_aware(monkeypatch, unavailable, kind="model", models=()):
+    class Picky(FakeProviderClient):
+        def complete(self, system, user, max_tokens=4000, effort="medium"):
+            if self.model in unavailable:
+                raise LLMError(f"{self.provider} cannot use {self.model}", 404, kind)
+            return super().complete(system, user, max_tokens, effort)
+    monkeypatch.setattr(ai_access, "make_client", lambda p, k, m="": Picky(p, k, m))
+    monkeypatch.setattr(ai_access, "list_models", lambda p, k: list(models))
+
+
+def test_retired_default_model_is_replaced_automatically(make_client, monkeypatch):
+    _model_aware(monkeypatch, {"llama-3.3-70b-versatile", "my-chosen-model"},
+                 models=["whisper-large-v3", "llama-guard-4-12b", "openai/gpt-oss-120b", "llama-3.1-8b-instant"])
+    c = make_client("retired@x.test")
+    r = c.c.put("/api/account/ai/groq", json={"api_key": GOOD}, headers={"X-Requested-With": "LawPilot"})
+    assert r.status_code == 200, r.json
+    assert r.json["check"]["model"] == "openai/gpt-oss-120b" and "chose" in r.json["check"]["note"]
+    assert r.json["active"]["model"] == "openai/gpt-oss-120b"
+    # A model the user picked on purpose is never swapped silently.
+    r = c.c.put("/api/account/ai/groq", json={"api_key": GOOD, "model": "my-chosen-model"},
+                headers={"X-Requested-With": "LawPilot"})
+    assert r.status_code == 400                                   # explicit choice: report, do not swap
+
+
+def test_openrouter_without_credit_falls_back_to_a_free_model(make_client, monkeypatch):
+    _model_aware(monkeypatch, {"meta-llama/llama-3.3-70b-instruct:free", "openai/gpt-4o"}, kind="quota",
+                 models=["openai/gpt-4o", "meta-llama/llama-3.3-70b-instruct:free", "google/gemma-3-27b-it:free"])
+    c = make_client("router@x.test")
+    r = c.c.put("/api/account/ai/openrouter", json={"api_key": GOOD}, headers={"X-Requested-With": "LawPilot"})
+    assert r.status_code == 200, r.json
+    assert r.json["check"]["model"] == "google/gemma-3-27b-it:free"
+
+
+def test_catalogue_marks_free_options():
+    pricing = {p["key"]: p["pricing"] for p in ai_access.catalog()}
+    assert pricing["gemini"] == "free" and pricing["groq"] == "free" and pricing["openrouter"] == "free_models"
+    assert pricing["openai"] == "paid"
