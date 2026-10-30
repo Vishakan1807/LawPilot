@@ -8,21 +8,27 @@ on:
 
 jobs:
   sqlite:
-    runs-on: ubuntu-latest
+    # Pinned instead of ubuntu-latest: the Ubuntu 26.04 image has no Python 3.9 build,
+    # and a pinned image keeps CI from breaking when GitHub moves the "latest" label.
+    runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false            # one Python version failing must not cancel the others
       matrix:
         python-version: ["3.9", "3.12"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install -r requirements.txt pytest
+          cache: pip
+      - run: pip install -r requirements.txt pytest pyflakes
+      - name: Lint
+        run: python -m pyflakes lawpilot tests
       # No API keys needed: tests use a fake LLM and the built-in embedder.
       - run: python -m pytest
 
   postgres:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -32,10 +38,11 @@ jobs:
         options: >-
           --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+          cache: pip
       - run: pip install -r requirements.txt pytest
       - run: python -m pytest
         env:
